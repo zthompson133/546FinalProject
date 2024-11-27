@@ -1,4 +1,3 @@
-//Here you will require route files and export them as used in previous labs.
 import theRoute from "./routes.js";
 const constructorMethod = (app) => {
     app.use("/", theRoute);
