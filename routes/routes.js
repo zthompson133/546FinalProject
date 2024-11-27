@@ -22,6 +22,7 @@ router.route("/verify").post(async (req, res) => {
   try {
     theUser = await userData.verifyUser(theEmail, thePassword);
     let theEvents = await eventData.getEventsByClass(theUser.class);
+    //This won't get rendered until users are added.
     res.render(path.resolve("static/homepage.handlebars"), {user: theUser, events: theEvents});
   }
   //Currently an error will always get caught here, since the users DB is empty.
@@ -34,7 +35,6 @@ router.route("/verify").post(async (req, res) => {
     -Incorrect password
     */
   }
-  //This won't get rendered until users are added.
 });
 
 export default router;
