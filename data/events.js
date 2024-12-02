@@ -16,6 +16,24 @@ export async function getAllEvents() {
     return theEvents;
 }
 
+export async function getEventByID(id) {
+    id = isValidString(id)
+    if (!ObjectId.isValid(id)) {
+      throw 'invalid object ID'
+    }
+  
+    const eventCollection = await events()
+    const event = await eventCollection.findOne({_id: new ObjectId(id)})
+  
+    if (event === null) {
+      throw 'No team with that id'
+    }
+  
+    event._id = event._id.toString()
+  
+    return event
+};
+
 //Returns a list of all events whose class matches theClass parameter. 
 export async function getEventsByClass(theClass) {
     helpers.checkArgs(arguments, 1);

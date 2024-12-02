@@ -29,6 +29,25 @@ export async function getUserByEmail(email) {
     }
     return theUser;
 }
+
+export async function getUserByID(id) {
+    id = isValidString(id)
+    if (!ObjectId.isValid(id)) {
+      throw 'invalid object ID'
+    }
+  
+    const userCollection = await users()
+    const user = await userCollection.findOne({_id: new ObjectId(id)})
+  
+    if (user === null) {
+      throw 'No team with that id'
+    }
+  
+    user._id = user._id.toString()
+  
+    return user
+};
+
 //Verifies the email/password pair. Not done yet.
 export async function verifyUser(email, password) {
     helpers.checkArgs(arguments, 2);
@@ -43,5 +62,4 @@ export async function verifyUser(email, password) {
 }
 
 export async function addUser() {
-
 }

@@ -18,3 +18,16 @@ export function checkString(str, name) {
     }
     return str;
 }
+
+export function isValidString (string) {
+    if (string == null) {
+        throw 'String must be provided'
+    }
+    if (typeof(string) !== 'string') {
+        throw 'Input provided must be a string'
+    }
+    if (string.trim() === "") {
+        throw 'String cannot be empty'
+    }
+    return string.trim()
+}
