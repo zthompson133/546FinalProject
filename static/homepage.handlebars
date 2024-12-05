@@ -12,8 +12,20 @@ Page the user sees after they log in.
 <body>
    <h1>Stevens Event Planner Homepage</h1>
 
+    <form class = "ib_form" action = "/myaccount" method = "POST">
+    <button type = "submit">My Account</button></form>
+
+    <form class = "ib_form" action = "/myprofile" method = "POST">
+    <button type = "submit">My Profile</button></form>
+
+    <form class = "ib_form" action = "/searchevents" method = "POST">
+    <button type = "submit">Search Events</button></form>
+
+    {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "POST">
+    <button type = "submit">Create An Event</button></form> {{/if}} </br>
+    <h2>All Upcoming Events</h2>
    <ol>
-        {{#each events}}
+    {{#each events}}
         <li>     
             <!-- 
             Need to add a description for each event

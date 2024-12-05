@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Stevens Event Planner - My Profile</title>
+    <link rel='stylesheet' href='../public/css/main.css' />
+</head>
+<body>
+    
+   <h1>My Profile</h1>
+    <form class = "ib_form" action = "/login" method = "POST">
+    <button type = "submit">Back to Homepage</button></form>
+
+    <form class = "ib_form" action = "/myaccount" method = "POST">
+    <button type = "submit">My Account</button></form>
+
+    Name: <span>{{user.firstName}} {{user.lastName}}</span></br>
+    Email: <span>{{user.email}}</span></br>
+    Class: <span>{{user.class}}</span></br>
+    Verified: <span>{{verified}}</span></br>
+    My Registered Events: </br>
+    </hr>
+    My Created Events: </br> 
+</body>
+</html>

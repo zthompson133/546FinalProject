@@ -26,3 +26,6 @@ button:hover {
 #error {
 	color:red;
 }
+.ib_form {
+	display: inline-block;
+}

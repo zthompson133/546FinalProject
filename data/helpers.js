@@ -1,4 +1,7 @@
 //Checks to see if a function was given the right number of arguments.
+import {users} from '../config/mongoCollections.js';
+import crypto from "crypto";
+
 export function checkArgs(args, length) {
     if(args.length != length) {
         throw "Wrong number of arguments. Should be " + length + ".";
@@ -18,3 +21,10 @@ export function checkString(str, name) {
     }
     return str;
 }
+
+export function doubleHash(passwd) {
+    let digest1 = crypto.createHash("sha256").update(passwd).digest("hex");
+    let digest2 = crypto.createHash("sha256").update(digest1).digest("hex");
+    return digest2;
+}
+
