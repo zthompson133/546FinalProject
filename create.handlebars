@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="../public/css/main.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Create a New Event</h1>
+        <form action="/events/create" method="POST" enctype="multipart/form-data">
+            <!-- Event Name -->
+            <div class="form-group">
+                <label for="event-name">Event Name</label>
+                <input type="text" id="event-name" name="name" required>
+            </div>
+
+            <!-- Host -->
+            <div class="form-group">
+                <label for="event-host">Host</label>
+                <input type="text" id="event-host" name="host" required>
+            </div>
+
+            <!-- Event Date -->
+            <div class="form-group">
+                <label for="event-date">Event Date</label>
+                <input type="date" id="event-date" name="date" required>
+            </div>
+
+            <!-- Event Time -->
+            <div class="form-group">
+                <label for="event-time">Event Time</label>
+                <input type="time" id="event-time" name="time" required>
+            </div>
+
+            <!-- Location -->
+            <div class="form-group">
+                <label for="event-location">Location</label>
+                <input type="text" id="event-location" name="location" required>
+            </div>
+
+            <!-- Audience Selection -->
+            <div class="form-group">
+                <label for="audience">Audience</label>
+                <select id="audience" name="audience">
+                    <option value="everyone">Open to everyone</option>
+                    <option value="undergraduates">Undergraduates</option>
+                    <option value="graduates">Graduates</option>
+                    <option value="major">Specific Major</option>
+                    <option value="other">Other</option>
+                </select>
+                <input type="text" id="major" name="major" placeholder="If 'Specific Major' is selected, specify here">
+            </div>
+
+            <!-- Flyer Upload -->
+            <div class="form-group">
+                <label for="flyer">Flyer (optional)</label>
+                <input type="file" id="flyer" name="flyer" accept="image/*">
+            </div>
+
+            <!-- Registration Deadline -->
+            <div class="form-group">
+                <label for="registration-deadline">Registration Deadline</label>
+                <input type="datetime-local" id="registration-deadline" name="registration_deadline">
+            </div>
+
+            <!-- Unregister Deadline -->
+            <div class="form-group">
+                <label for="unregister-deadline">Unregister Deadline</label>
+                <input type="datetime-local" id="unregister-deadline" name="unregister_deadline">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Event</button>
+        </form>
+    </div>
+
+    <script>
+        // Set default values for optional fields if not provided
+        document.querySelector('form').addEventListener('submit', function(event) {
+            // Set default flyer image if not uploaded
+            if (!document.getElementById('flyer').files.length) {
+                document.getElementById('flyer').value = 'no-image';
+            }
+
+            // Set default registration deadline to event end time
+            if (!document.getElementById('registration-deadline').value) {
+                document.getElementById('registration-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-time').value;
+            }
+
+            // Set default unregister deadline to event start time
+            if (!document.getElementById('unregister-deadline').value) {
+                document.getElementById('unregister-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-time').value;
+            }
+        });
+    </script>
+</body>
+</html>

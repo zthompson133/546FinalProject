@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Created Events</title>
+  <link rel="stylesheet" href="public/css/main.css">
+</head>
+<body>
+  <h1>My Created Events</h1>
+
+  {{#if events.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each events}}
+      <tr>
+        <td>{{this.title}}</td>
+        <td>{{this.date}}</td>
+        <td>{{this.location}}</td>
+        <td>
+          <!-- Link to Edit -->
+          <a href="/edit/{{this._id}}">Edit</a>
+
+          <!-- Delete Form -->
+          <form action="/events/{{this._id}}" method="post" style="display:inline;">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <p>You have not created any events yet.</p>
+  {{/if}}
+
+  <a href="/create">Create New Event</a>
+</body>
+</html>
