@@ -27,4 +27,3 @@ export function doubleHash(passwd) {
     let digest2 = crypto.createHash("sha256").update(digest1).digest("hex");
     return digest2;
 }
-
