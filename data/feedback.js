@@ -22,12 +22,14 @@ export async function createFeedback(userId, eventId, rating, comment) {
         throw "Not a valid rating";
     }
 
+    const comment = helpers.checkString(comment, 'comment')
+
     const newFeedback = {
         _id: new ObjectId(),
         userId: user._id,
         eventId: event._id,
         rating: rating,
-        comments: comment,
+        comment: comment,
         createdAt: new Date()
     };
 
@@ -56,33 +58,36 @@ export async function createFeedback(userId, eventId, rating, comment) {
 }
 
 export async function getFeedback(feedbackId) {
-    feedbackId = isValidString(feedbackId)
+    feedbackId = helpers.checkString(feedbackId, 'feedbackId')
     if (!ObjectId.isValid(feedbackId)) {
       throw 'invalid object ID'
     } 
   
-    const userCollection = await users();
-    const foundGame = await userCollection.findOne(
+    const eventsCollection = await events();
+    const foundFeedback = await eventsCollection.findOne(
       {'feedback._id': new ObjectId(feedbackId)},
     );
   
-    if (!foundGame) {
-      throw 'Game Not Found';
+    if (!foundFeedback) {
+      throw 'Feedback Not Found';
     }
   
-    return foundGame.games[0];
+    return foundFeedback.feedback[0];
 };  
 
 export async function updateFeedback(feedbackId, updateObject) {
-    feedbackId = helpers.isValidString(feedbackId)
+    feedbackId = helpers.isValidString(feedbackId, 'feedbackId')
 
     if (!ObjectId.isValid(feedbackId)) {
         throw 'Invalid object ID';
     }
 
     let userId
+    let eventId
     const userCollection = await users()
+    const eventCollection = await events()
     const userList = await userCollection.find({}).toArray()
+    const eventList = await eventCollection.find({}).toArray()
 
     let feedback = await getFeedback(feedbackId)
 
@@ -93,120 +98,146 @@ export async function updateFeedback(feedbackId, updateObject) {
             }
         }
     }
+
+    for (const events of eventList) {
+        for (const feedback of events.feedback) {
+            if (feedback._id.toString() === feedbackId) {
+                eventId = events._id
+            }
+        }
+    }
     
     const user = await getUserByID(userId.toString());
     const updatedFeedbackData = { ...feedback };
 
-    const event = await getEventByID(game.opposingTeamId.toString());
+    const event = await getEventByID(eventId.toString());
 
-    if (updateObject.gameDate) {
-    updatedGameData.gameDate = isValidDate(updateObject.gameDate);
-    const gameYear = parseInt(updateObject.gameDate.substring(6, 10), 10);
-    if (gameYear < team1.yearFounded || (team2 && gameYear < team2.yearFounded)) {
-        throw "Game cannot occur before either team was founded";
-    }
-    }
+    let newRating = event.rating
 
-    if (updateObject.homeOrAway) {
-    if (updateObject.homeOrAway !== "Home" && updateObject.homeOrAway !== "Away") {
-        throw "Indicate Home or Away";
-    }
-    updatedGameData.homeOrAway = updateObject.homeOrAway;
-    }
-
-    if (updateObject.finalScore) {
-    isValidScore(updateObject.finalScore);
-    updatedGameData.finalScore = updateObject.finalScore
-    }
-
-    if (updateObject.win !== undefined) {
-    if (typeof updateObject.win !== 'boolean') {
-        throw "Win can only be true or false";
-    }
-    updatedGameData.win = updateObject.win;
-
-    let [wins, losses] = team1.winLossCount.split('-').map(Number);
-    if (game.win !== updateObject.win) {
-        if (updateObject.win) {
-        wins += 1;
-        losses -= 1;
-        } else {
-        wins -= 1;
-        losses += 1;
+    if (updateObject.rating) {
+        const ratings = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+        if (!ratings.includes(updateObject.rating)) {
+            throw "Not a valid rating";
         }
-        newWinLoss = `${wins}-${losses}`;
-    }
+
+        updatedFeedbackData.rating = updateObject.rating
+
+        newRating = (newRating * event.feedback.length - feedback.rating + updateObject.rating) / event.feedback.length
     }
 
-    let updatedGamesArray = [];
-    for (const game of team1.games) {
-    if (gameId === game._id.toString()) {
-        updatedGamesArray.push({ ...updatedGameData, _id: game._id });
-    } else {
-        updatedGamesArray.push(game);
-    }
+    if (updateObject.comment) {
+        const checkComment = helpers.checkString(updateObject.comment, 'comment')
+
+        updatedFeedbackData.comment = checkComment
     }
 
-    const teamGameUpdate = await teamsCollection.updateOne(
-    { _id: new ObjectId(team1._id.toString())},
-    { $set: { games: updatedGamesArray, winLossCount: newWinLoss }}
+
+    let updatedEventFeedbackArray = [];
+    for (const feedback of event.feedback) {
+        if (feedbackId === feedback.feedbackId.toString()) {
+            updatedEventFeedbackArray.push({ ...updatedFeedbackData, _id: feedback._id });
+        } else {
+            updatedEventFeedbackArray.push(feedback);
+        }
+    }
+
+    let updatedUserFeedbackArray = [];
+    for (const feedback of user.feedback) {
+        if (feedbackId === feedback.feedbackId.toString()) {
+            updatedUserFeedbackArray.push({ ...updatedFeedbackData, _id: feedback._id });
+        } else {
+            updatedUserFeedbackArray.push(feedback);
+        }
+    }
+
+    const eventUpdate = await eventCollection.updateOne(
+    { _id: new ObjectId(event._id.toString())},
+    { $set: { feedback: updatedEventFeedbackArray, rating: newRating }}
     );
 
-    if (teamGameUpdate.modifiedCount === 0) {
-    throw `Could not update the game with ID ${gameId}`;
+    if (eventUpdate.modifiedCount === 0) {
+        throw `Could not update the feedback with ID ${feedbackId}`;
     }
 
-    const updatedTeam = await getTeamById(team1._id.toString())
+    const userUpdate = await userCollection.updateOne(
+    { _id: new ObjectId(user._id.toString())},
+    { $set: { feedback: updatedUserFeedbackArray }}
+    );
 
-    return updatedTeam;
+    if (userUpdate.modifiedCount === 0) {
+        throw `Could not update the feedback with ID ${feedbackId}`;
+    }
+
+    const updatedEvent = await getEventByID(event._id.toString())
+
+    return updatedEvent;
 };
 
-export const removeGame = async (gameId) => {
-    gameId = isValidString(gameId)
-    if (!ObjectId.isValid(gameId)) {
+export const removeGame = async (feedbackId) => {
+    feedbackId = helpers.checkString(feedbackId, 'feedbackId')
+    if (!ObjectId.isValid(feedbackId)) {
     throw 'invalid object ID'
     } 
 
-    let team1Id
-    const teamsCollection = await teams()
-    const teamsList = await teamsCollection.find({}).toArray()
+    let userId
+    let eventId
+    const usersCollection = await users()
+    const eventCollection = await events()
+    const usersList = await usersCollection.find({}).toArray()
+    const eventList = await eventCollection.find({}).toArray()
 
-    let game = await getGame(gameId)
+    let feedback = await getFeedback(feedbackId)
 
-    for (const teams of teamsList) {
-    for (const games of teams.games) {
-        if (games._id.toString() === gameId) {
-        team1Id = teams._id
+    for (const users of usersList) {
+        for (const feedbacks of users.feedback) {
+            if (feedbacks._id.toString() === feedbackId) {
+                userId = users._id
+            }
         }
     }
+
+    for (const events of eventList) {
+        for (const feedbacks of events.feedback) {
+            if (feedbacks._id.toString() === feedbackId) {
+                eventId = users._id
+            }
+        }
     }
 
-    const team1 = await getTeamById(team1Id.toString());
+    const user = await getUserByID(userId.toString());
+    const event = await getEventByID(eventId.toString());
 
-    let updatedGamesArray = [];
-    for (const game of team1.games) {
-    if (gameId === game._id.toString()) {
-        continue
-    } else {
-        updatedGamesArray.push(game);
-    }
-    }
-
-    let [wins, losses] = team1.winLossCount.split('-').map(Number)
-    if (game.win === true) {
-    wins -= 1
-    } else {
-    losses -= 1
+    let updatedUserFeedbackArray = [];
+    for (const feedbacks of user.feedback) {
+        if (feedbackId === feedbacks._id.toString()) {
+            continue
+        } else {
+            updatedUserFeedbackArray.push(feedbacks);
+        }
     }
 
-    let newWinLoss = String(wins) + "-" + String(losses)
+    let updatedEventFeedbackArray = [];
+    for (const feedbacks of event.feedback) {
+        if (feedbackId === feedbacks._id.toString()) {
+            continue
+        } else {
+            updatedEventFeedbackArray.push(feedbacks);
+        }
+    }
 
-    const teamGameUpdate = await teamsCollection.updateOne(
-    { _id: new ObjectId(team1._id.toString())},
-    { $set: { games: updatedGamesArray, winLossCount: newWinLoss }}
+    const newRating = (event.rating * event.feedback.length - feedback.rating) / (event.feedback.length - 1)
+
+    const userFeedbackUpdate = await usersCollection.updateOne(
+        { _id: new ObjectId(user._id.toString())},
+        { $set: { feedback: updatedUserFeedbackArray }}
     );
 
-    const updatedTeam = await getTeamById(team1._id.toString())
+    const eventFeedbackUpdate = await eventCollection.updateOne(
+        { _id: new ObjectId(event._id.toString())},
+        { $set: { feedback: updatedEventFeedbackArray, rating: newRating }}
+    );
 
-    return updatedTeam;
+    const updatedEvent = await getEventByID(event._id.toString())
+
+    return updatedEvent;
 }
