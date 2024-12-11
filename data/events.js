@@ -37,7 +37,7 @@ export async function getEventByID(id) {
 //Returns a list of all events whose class matches theClass parameter. 
 export async function getEventsByClass(theClass) {
     helpers.checkArgs(arguments, 1);
-    if(typeof theClass !== Boolean) {
+    if(typeof theClass !== "boolean") {
         throw "class is not a boolean.";
     }
     let allEvents = await getAllEvents();

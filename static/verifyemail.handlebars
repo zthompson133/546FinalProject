@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Stevens Event Planner - Verify Email</title>
+    <link rel='stylesheet' href='../public/css/main.css' />
+</head>
+<body>
+   <h1>Verify Email And Log In</h1>
+   A verification code should be sent to your email.
+   <form action="/verifyemail" method="POST">
+    Verify Email And Log In<br>
+    Email <input type = "text" id = "ve_email" name = "ve_email">
+    <label for = "ve_email"></label></input></br>
+    Verification Code <input type = "text" id = "ve_code" name = "ve_code">
+    <label for = "ve_code"></label></input></br>
+    Password <input type = "password" id = "ve_password" name = "ve_password">
+    <label for = "ve_password"></label></input></br>
+    <button type = "submit">Go</button>
+  </form>
+</body>
+</html>
