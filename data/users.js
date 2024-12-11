@@ -4,14 +4,15 @@ import {ObjectId} from "mongodb";
 import * as helpers from "./helpers.js";
 import * as eventsData from "./events.js";
 import nodemailer from "nodemailer";
-const passwd = process.env(PASSWD);
+import dotenv from "dotenv";
+dotenv.config();
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for port 465, false for other ports
     auth: {
       user: "eventplanner363@gmail.com",
-      pass: passwd
+      pass: process.env.PASSWD
     },
   });
 

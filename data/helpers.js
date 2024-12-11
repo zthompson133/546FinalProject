@@ -27,3 +27,10 @@ export function doubleHash(passwd) {
     let digest2 = crypto.createHash("sha256").update(digest1).digest("hex");
     return digest2;
 }
+export function checkId(id, varName) {
+    id = checkString(id, "id");
+    if(!(ObjectId.isValid(id))) {
+        throw varName + " is not a valid id.";
+    }
+    return id;
+}
