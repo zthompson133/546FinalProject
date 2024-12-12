@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>{{title}}</title>
+
+  </head>
+  <body>
+    <h1>{{title}}</h1>
+
+    <ul>
+      {{#each events}}
+        <li>
+          <a href="/events/{{id}}"><h2>{{name}}</h2></a>
+          <p><strong>Start Time:</strong> {{startTime}}</p>
+          <p><strong>End Time:</strong> {{endTime}}</p>
+          <p><strong>Location:</strong> {{location}}</p>
+        </li>
+      {{/each}}
+    </ul>
+
+  </body>
+</html>
