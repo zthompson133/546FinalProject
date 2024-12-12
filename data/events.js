@@ -16,36 +16,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function addEvent(
-  name,
-  description,
-  date,
-  starttime,
-  endtime,
-  location,
-  organizer,
-  feedback,
-  rating,
-  attendees,
-  numberOfAttendees,
-  Class,
-  Poster
-) {
-  name = helpers.isValidString(name);
-  description = helpers.isValidString(description);
-  helpers.checkValidDate(date, "Date");
-  helpers.isValidTime(starttime, "Start time");
-  helpers.checkEndTime(starttime, endtime, "End time");
-  location = helpers.isValidString(location);
-  organizer = helpers.isValidString(organizer);
-  feedback = [];
-  rating = 0;
-  attendees = [];
-  numberOfAttendees = 0;
-  Class = helpers.isValidClass(Class);
+export async function addEvent(name, description, date, starttime, endtime, location, organizer, Class, Poster, feedback, rating, attendees, numberOfAttendees) {
+  name = helpers.isValidString(name, 'name')
+  description = helpers.isValidString(description, 'description')
+  helpers.checkValidDate(date, 'Date')
+  helpers.isValidTime(starttime, 'Start time')
+  helpers.checkEndTime(starttime, endtime, 'End time')
+  location = helpers.isValidString(location, 'location')
+  organizer = helpers.isValidString(organizer, 'organizer')
+  Class = helpers.isValidClass(Class, 'class')
   if (Poster == null) {
-    Poster = "default";
+    Poster = 'default'
   }
+  feedback = []
+  rating = 0
+  attendees = []
+  numberOfAttendees = 0
 
   let newEvent = {
     name: name,
@@ -53,27 +39,27 @@ export async function addEvent(
     date: date,
     starttime: starttime,
     endtime: endtime,
-    location: location,
+    location:location,
     organizer: organizer,
+    Class: Class,
+    Poster: Poster,
     feedback: feedback,
     rating: rating,
     attendees: attendees,
-    numberOfAttendees: numberOfAttendees,
-    Class: Class,
-    Poster: Poster,
-  };
-
-  const eventsCollection = await events();
-  const insertInfo = await eventsCollection.insertOne(newEvent);
-  if (!insertInfo.acknowledged || !insertInfo.insertedId) {
-    throw "Could not add event";
+    numberOfAttendees: numberOfAttendees
   }
 
-  const newId = insertInfo.insertedId.toString();
+  const eventsCollection = await events()
+  const insertInfo = await eventsCollection.insertOne(newEvent)
+  if (!insertInfo.acknowledged || !insertInfo.insertedId) {
+    throw 'Could not add event'
+  }
 
-  const event = await getEventByID(newId);
+  const newId = insertInfo.insertedId.toString()
 
-  return event;
+  const event = await getEventByID(newId)
+
+  return event
 }
 
 export async function updateEvent(eventId, updateObject) {

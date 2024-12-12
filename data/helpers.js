@@ -99,15 +99,15 @@ export function checkEndTime(startTime, endTime, varName) {
 
 export function isValidClass(string, varName) {
     if (string == null) {
-        throw 'String must be provided'
+        throw `${varName} must be provided`
     }
     
     if (typeof(string) !== 'string') {
-        throw 'Input provided must be a string'
+        throw `${varName} provided must be a string`
     }
 
     if (string.trim() === "") {
-        throw 'String cannot be empty'
+        throw `${varName} cannot be empty`
     }
 
     if (string.trim().toLowerCase() !== 'graduate' & string.trim().toLowerCase() !== 'undergraduate') {
@@ -117,18 +117,15 @@ export function isValidClass(string, varName) {
     return string.trim().toLowerCase()
 }
 
-export function isValidString (string) {
+export function isValidString (string, name) {
     if (string == null) {
-        throw 'String must be provided'
+        throw `String must be provided for ${name}`
     }
     if (typeof(string) !== 'string') {
-        throw 'Input provided must be a string'
+        throw `Input provided for ${name} must be a string`
     }
     if (string.trim() === "") {
-        throw 'String cannot be empty'
-    }
-    if (string.trim().length < 20 & string.trim().length > 255) {
-        throw 'String must be between 20 and 255 characters'
+        throw `${name} cannot be empty`
     }
     return string.trim()
 }
