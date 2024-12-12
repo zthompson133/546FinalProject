@@ -1,10 +1,11 @@
-import e, { Router } from 'express';
+import e, { Router } from "express";
 import * as main from "../public/js/main.js";
 import path from "path";
 import * as userData from "../data/users.js";
 import * as eventData from "../data/events.js";
 import * as helpers from "../data/helpers.js";
-import { runInNewContext } from 'vm';
+import { runInNewContext } from "vm";
+
 let activeUser = false;
 /*
 See index.js for description of each route.
@@ -18,12 +19,14 @@ router.route("/signup").post(async (req, res) => {
   res.render(path.resolve("static/signup.handlebars"));
 });
 router.route("/login").post(async (req, res) => {
-  if(activeUser) {
+  if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
-    let theEvents = await eventData.getEventsByClass(theUser.class);    
-    res.render(path.resolve("static/homepage.handlebars"), {user: theUser, events: theEvents});
-  }
-  else {
+    let theEvents = await eventData.getEventsByClass(theUser.class);
+    res.render(path.resolve("static/homepage.handlebars"), {
+      user: theUser,
+      events: theEvents,
+    });
+  } else {
     res.render(path.resolve("static/login.handlebars"));
   }
 });
@@ -31,7 +34,7 @@ router.route("/createaccount").post(async (req, res) => {
   try {
     let theBody = req.body;
     let signupClass = true;
-    if(theBody.signup_class === "on") {
+    if (theBody.signup_class === "on") {
       signupClass = false;
     }
     let userObject = await userData.addUser(
@@ -42,58 +45,71 @@ router.route("/createaccount").post(async (req, res) => {
       theBody.signup_password1,
       theBody.signup_password2
     );
-    const finalUserObject = await userData.sendEmail(userObject["email"], 
-      "verificationCode", "verification code");
+    const finalUserObject = await userData.sendEmail(
+      userObject["email"],
+      "verificationCode",
+      "verification code"
+    );
     res.render(path.resolve("static/verifyemail.handlebars"));
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Create account error: " + e});
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Create account error: " + e,
+    });
   }
 });
 router.route("/sendveremail").post(async (req, res) => {
   try {
     const theBody = req.body;
-    if(theBody.new_veremail) {
-      const finalUserObject = await userData.sendEmail(theBody.errorveremail, 
-        "verificationCode", "verification code");
+    if (theBody.new_veremail) {
+      const finalUserObject = await userData.sendEmail(
+        theBody.errorveremail,
+        "verificationCode",
+        "verification code"
+      );
     }
     res.render(path.resolve("static/verifyemail.handlebars"));
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Send account verification email error: " + e});
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Send account verification email error: " + e,
+    });
   }
 });
 router.route("/sendpasswdemail").post(async (req, res) => {
   try {
     const theBody = req.body;
-    if(theBody.new_pwdemail) {
-      const finalUserObject = await userData.sendEmail(req.body.errorpwdemail, 
-        "password", "new password");
+    if (theBody.new_pwdemail) {
+      const finalUserObject = await userData.sendEmail(
+        req.body.errorpwdemail,
+        "password",
+        "new password"
+      );
     }
     res.render(path.resolve("static/changepassword.handlebars"));
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Create password reset email error: " + e});
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Create password reset email error: " + e,
+    });
   }
 });
 router.route("/changepassword").post(async (req, res) => {
   try {
     const theBody = req.body;
     let theUser = await userData.newPassword(
-      theBody.changepassword_email, 
+      theBody.changepassword_email,
       theBody.temp_passwd,
       theBody.changepassword_pwd1,
-      theBody.changepassword_pwd2);
+      theBody.changepassword_pwd2
+    );
     let theEvents = await eventData.getEventsByClass(theUser.class);
     activeUser = theUser["email"];
-    res.render(path.resolve("static/homepage.handlebars"), {user: theUser, events: theEvents});
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Reset password error: " + e});
+    res.render(path.resolve("static/homepage.handlebars"), {
+      user: theUser,
+      events: theEvents,
+    });
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Reset password error: " + e,
+    });
   }
 });
 router.route("/checkpassword").post(async (req, res) => {
@@ -109,12 +125,15 @@ router.route("/checkpassword").post(async (req, res) => {
     let finalUser = await userData.changeField(activeUser, "verified", true);
 
     let theEvents = await eventData.getEventsByClass(finalUser.class);
-    
-    res.render(path.resolve("static/homepage.handlebars"), {user: finalUser, events: theEvents});
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Login error: " + e});
+
+    res.render(path.resolve("static/homepage.handlebars"), {
+      user: finalUser,
+      events: theEvents,
+    });
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Login error: " + e,
+    });
   }
 });
 router.route("/verifyemail").post(async (req, res) => {
@@ -126,18 +145,23 @@ router.route("/verifyemail").post(async (req, res) => {
   try {
     let theUser1 = await userData.checkPassword(theEmail, thePassword);
     let theUser2 = await userData.checkCode(theEmail, theCode);
-    if(theUser1["_id"].toString() !== theUser2["_id"].toString()) {
-      console.log("Database error. User object returned by checkPassword does \
-        not match user object returned by checkCode.");
+    if (theUser1["_id"].toString() !== theUser2["_id"].toString()) {
+      console.log(
+        "Database error. User object returned by checkPassword does \
+        not match user object returned by checkCode."
+      );
       return false;
     }
     let theEvents = await eventData.getEventsByClass(theUser1.class);
     activeUser = theUser1["email"];
-    res.render(path.resolve("static/homepage.handlebars"), {user: theUser1, events: theEvents});
-  }
-  catch(e) {
-    res.render(path.resolve("static/accounterror.handlebars"), 
-      {error: "Verify account error: " + e});
+    res.render(path.resolve("static/homepage.handlebars"), {
+      user: theUser1,
+      events: theEvents,
+    });
+  } catch (e) {
+    res.render(path.resolve("static/accounterror.handlebars"), {
+      error: "Verify account error: " + e,
+    });
   }
 });
 router.route("/logout").post(async (req, res) => {
@@ -151,19 +175,23 @@ router.route("/myprofile").post(async (req, res) => {
   let theUser = await userData.getUserByEmail(activeUser);
   let theClass = userData.getClass(theUser);
   let verified = "No";
-  if(theUser["verified"]) {
+  if (theUser["verified"]) {
     verified = "Yes";
   }
-  res.render(path.resolve("static/profile.handlebars"), {user: theUser, class: theClass, verified: verified});
+  res.render(path.resolve("static/profile.handlebars"), {
+    user: theUser,
+    class: theClass,
+    verified: verified,
+  });
 });
 router.route("/searchevents").post(async (req, res) => {
- //Not done yet 
+  //Not done yet
 });
 router.route("/createevent").post(async (req, res) => {
- res.render(path.resolve("static/create.handlebars"));
+  res.render(path.resolve("static/create.handlebars"));
 });
 router
-  .route('/events')
+  .route("/events")
   .get(async (req, res) => {
     //retrieve a list of all events
     try {
@@ -180,13 +208,13 @@ router
     if (!eventData || Object.keys(eventData).length === 0) {
       return res
         .status(400)
-        .json({ error: 'There are no fields in the request body' });
+        .json({ error: "There are no fields in the request body" });
     }
     //check all inputs, that should respond with a 400
     try {
-      eventData.title = helpers.checkString(eventData.name, 'Event Title');
-      eventData.date = helpers.checkString(eventData.date, 'Event Date');
-      eventData.location = helpers.checkString(eventData.location, 'Location');
+      eventData.title = helpers.checkString(eventData.name, "Event Title");
+      eventData.date = helpers.checkString(eventData.date, "Event Date");
+      eventData.location = helpers.checkString(eventData.location, "Location");
       let theUser = await userData.getUserByEmail(activeUser);
       let theId = actveUser["_id"];
       //eventData.organizerId = helpers.checkId(eventData.organizerId, 'Organizer ID');
@@ -197,7 +225,12 @@ router
     //insert the event
     try {
       const { title, date, location, organizerId } = eventData;
-      const newEvent = await eventData.addEvent(title, date, location, organizerId);
+      const newEvent = await eventData.addEvent(
+        title,
+        date,
+        location,
+        organizerId
+      );
       return res.json(newEvent);
     } catch (e) {
       return res.status(500).json({ error: e });
@@ -205,20 +238,24 @@ router
   });
 
 router
-  .route('/events:id')
+  .route("/events/:id")
   .get(async (req, res) => {
     //retrieve a specific event by ID
     //check inputs that produce 400 status
     try {
-      req.params.id = helpers.checkId(req.params.id, 'Event ID URL Param');
+      req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
     }
     //try getting the event by ID
     try {
-      const event = await eventData.getEventById(req.params.id);
-      return res.json(event);
+      const event = await eventData.getEventByID(req.params.id);
+      return res.render(path.resolve("static/eventpage.handlebars"), {
+        event: event,
+        title: "Event Page",
+      });
     } catch (e) {
+      console.log(e);
       return res.status(404).json({ error: e });
     }
   })
@@ -229,21 +266,32 @@ router
     if (!updatedData || Object.keys(updatedData).length === 0) {
       return res
         .status(400)
-        .json({ error: 'There are no fields in the request body' });
+        .json({ error: "There are no fields in the request body" });
     }
     //check all the inputs that will return 400 if they fail
     try {
-      req.params.id = helpers.checkId(req.params.id, 'Event ID URL Param');
-      updatedData.title = helpers.checkString(updatedData.title, 'Event Title');
-      updatedData.date = helpers.checkString(updatedData.date, 'Event Date');
-      updatedData.location = helpers.checkString(updatedData.location, 'Location');
-      updatedData.organizerId = helpers.checkId(updatedData.organizerId, 'Organizer ID');
+      req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
+
+      updatedData.title = helpers.checkString(updatedData.title, "Event Title");
+
+      updatedData.date = helpers.checkString(updatedData.date, "Event Date");
+      updatedData.location = helpers.checkString(
+        updatedData.location,
+        "Location"
+      );
+      updatedData.organizerId = helpers.checkId(
+        updatedData.organizerId,
+        "Organizer ID"
+      );
     } catch (e) {
       return res.status(400).json({ error: e });
     }
     //try to update the event
     try {
-      const updatedEvent = await eventData.updateEventPut(req.params.id, updatedData);
+      const updatedEvent = await eventData.updateEventPut(
+        req.params.id,
+        updatedData
+      );
       return res.json(updatedEvent);
     } catch (e) {
       return res.status(404).json({ error: e });
@@ -256,25 +304,37 @@ router
     if (!requestBody || Object.keys(requestBody).length === 0) {
       return res
         .status(400)
-        .json({ error: 'There are no fields in the request body' });
+        .json({ error: "There are no fields in the request body" });
     }
     //check the inputs that will return 400 if fail
     try {
-      req.params.id = helpers.checkId(req.params.id, 'Event ID');
+      req.params.id = helpers.checkId(req.params.id, "Event ID");
       if (requestBody.title)
-        requestBody.title = helpers.checkString(requestBody.title, 'Event Title');
+        requestBody.title = helpers.checkString(
+          requestBody.title,
+          "Event Title"
+        );
       if (requestBody.date)
-        requestBody.date = helpers.checkString(requestBody.date, 'Event Date');
+        requestBody.date = helpers.checkString(requestBody.date, "Event Date");
       if (requestBody.location)
-        requestBody.location = helpers.checkString(requestBody.location, 'Location');
+        requestBody.location = helpers.checkString(
+          requestBody.location,
+          "Location"
+        );
       if (requestBody.organizerId)
-        requestBody.organizerId = helpers.checkId(requestBody.organizerId, 'Organizer ID');
+        requestBody.organizerId = helpers.checkId(
+          requestBody.organizerId,
+          "Organizer ID"
+        );
     } catch (e) {
       return res.status(400).json({ error: e });
     }
     //try to perform update
     try {
-      const updatedEvent = await eventData.updateEventPatch(req.params.id, requestBody);
+      const updatedEvent = await eventData.updateEventPatch(
+        req.params.id,
+        requestBody
+      );
       return res.json(updatedEvent);
     } catch (e) {
       return res.status(404).json({ error: e });
@@ -284,7 +344,7 @@ router
     //delete an event by ID
     //check the id
     try {
-      req.params.id = helpers.checkId(req.params.id, 'Event ID URL Param');
+      req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
     }
@@ -296,4 +356,26 @@ router
       return res.status(404).json({ error: e });
     }
   });
+
+router.route("/register/:id").get(async (req, res) => {
+  try {
+    req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    const event = await eventData.getEventByID(req.params.id);
+    if (!event) {
+      throw new Error("No Event exists with that ID");
+    }
+    const register = await eventData.registerForEvent(
+      id,
+      /*req.session.user.id*/ "12345678"
+    );
+  } catch (e) {
+    console.log(e);
+    return res.status(404).json({ error: e });
+  }
+});
+
 export default router;
