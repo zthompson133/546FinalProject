@@ -240,8 +240,6 @@ router
 router
   .route("/events/:id")
   .get(async (req, res) => {
-    //retrieve a specific event by ID
-    //check inputs that produce 400 status
     try {
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
@@ -249,10 +247,26 @@ router
     }
     //try getting the event by ID
     try {
+      /*if (req.session.user) {
+        const userId = req.session.user.id;
+      }*/
+      const userId = "675a9e8299e6525b711cb844";
+
+      const user = await userData.getUserById(userId);
+      let studentRegistered = false;
+      user.registeredEvents.forEach((e) => {
+        if (e === req.params.id) {
+          studentRegistered = true;
+        }
+      });
+
       const event = await eventData.getEventByID(req.params.id);
+
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
+        studentRegistered,
+        eligible: user.class === event.class,
       });
     } catch (e) {
       console.log(e);
@@ -369,9 +383,39 @@ router.route("/register/:id").get(async (req, res) => {
       throw new Error("No Event exists with that ID");
     }
     const register = await eventData.registerForEvent(
-      id,
-      /*req.session.user.id*/ "12345678"
+      req.params.id,
+      /*req.session.user.id*/ "675a9e8299e6525b711cb844"
     );
+    if (register) {
+      return res.redirect("/events/" + req.params.id);
+    } else {
+      return res.status(404).json({ error: "Could not register for event" });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(404).json({ error: e });
+  }
+});
+router.route("/unregister/:id").get(async (req, res) => {
+  try {
+    req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    const event = await eventData.getEventByID(req.params.id);
+    if (!event) {
+      throw new Error("No Event exists with that ID");
+    }
+    const unregister = await eventData.unregisterFromEvent(
+      req.params.id,
+      /*req.session.user.id*/ "675a9e8299e6525b711cb844"
+    );
+    if (unregister) {
+      return res.redirect("/events/" + req.params.id);
+    } else {
+      return res.status(404).json({ error: "Could not unregister for event" });
+    }
   } catch (e) {
     console.log(e);
     return res.status(404).json({ error: e });
