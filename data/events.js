@@ -62,14 +62,6 @@ export async function addEvent(name, description, date, starttime, endtime, loca
   return event
 }
 
-
-  const newId = insertInfo.insertedId.toString();
-
-  const event = await getEventByID(newId);
-
-  return event;
-}
-
 export async function updateEvent(eventId, updateObject) {
   eventId = helpers.isValidString(eventId);
   if (helpers.checkId(eventId)) {
