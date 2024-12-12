@@ -25,10 +25,23 @@
         <p>Attendees: {{event.numberOfAttendees}}</p>
       </div>
     </div>
-    <button
-      type="button"
-      onclick="window.location.href='/register'"
-    >Register</button>
+
+    {{#if studentRegistered}}
+      <button type="button" disabled>You are Already Registered</button>
+      <button
+        type="button"
+        onclick="window.location.href='/unregister/{{event._id}}'"
+      >Unregister</button>
+    {{else}}
+      {{#if eligible}}
+        <button
+          type="button"
+          onclick="window.location.href='/register/{{event._id}}'"
+        >Register</button>
+      {{else}}
+        <button type="button" disabled>You can't Register</button>
+      {{/if}}
+    {{/if}}
 
     <form class="ib_form" action="/login" method="POST">
       <button type="submit">Back to Homepage</button>
