@@ -15,7 +15,118 @@ const transporter = nodemailer.createTransport({
     pass: process.env.PASSWD,
   },
 });
-export async function addEvent() {}
+
+export async function addEvent(name, description, date, starttime, endtime, location, organizer, feedback, rating, attendees, numberOfAttendees, Class, Poster) {
+    name = helpers.isValidString(name)
+    description = helpers.isValidString(description)
+    helpers.checkValidDate(date, 'Date')
+    helpers.isValidTime(starttime, 'Start time')
+    helpers.checkEndTime(starttime, endtime, 'End time')
+    location = helpers.isValidString(location)
+    organizer = helpers.isValidString(organizer)
+    feedback = []
+    rating = 0
+    attendees = []
+    numberOfAttendees = 0
+    Class = helpers.isValidClass(Class)
+    if (Poster == null) {
+      Poster = 'default'
+    }
+
+    let newEvent = {
+      name: name,
+      description: description,
+      date: date,
+      starttime: starttime,
+      endtime: endtime,
+      location:location,
+      organizer: organizer,
+      feedback: feedback,
+      rating: rating,
+      attendees: attendees,
+      numberOfAttendees: numberOfAttendees,
+      Class: Class,
+      Poster: Poster
+    }
+
+    const eventsCollection = await events()
+    const insertInfo = await eventsCollection.insertOne(newEvent)
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) {
+      throw 'Could not add event'
+    }
+
+    const newId = insertInfo.insertedId.toString()
+
+    const event = await getEventByID(newId)
+
+    return event
+}
+
+export async function updateEvent(eventId, updateObject) {
+  eventId = helpers.isValidString(eventId);
+  if (helpers.checkId(eventId)) {
+    throw 'Invalid object ID';
+  }
+
+  let event = await getEventByID(eventId)
+
+  if (updateObject.name) {
+    updateObject.name = helpers.isValidString(updateObject.name);
+  }
+
+  if (updateObject.description) {
+    updateObject.description = helpers.isValidString(updateObject.description)
+  }
+
+  if (updateObject.date) {
+    helpers.checkValidDate(updateObject.date)
+  }
+
+  if (updateObject.startTime) {
+    helpers.isValidTime(updateObject.startTime)
+  }
+
+  if (updateObject.endtime) {
+    if (updateObject.startTime) {
+      helpers.checkEndTime(updateObject.startTime, updateObject.endtime)
+    }
+    else {
+      helpers.checkEndTime(event.startTime, updateObject.endtime)
+    }
+  }
+
+  if (updateObject.location) {
+    updateObject.location = helpers.isValidString(updateObject.location)
+  }
+
+  let rating = 0
+  if (updateObject.feedback) {
+    for (const feedback of updateObject.feedback) {
+      rating += feedback.rating
+    }
+
+    updateObject.rating = rating / updateObject.feedback.length;
+  }
+
+  if (updateObject.attendees) {
+    updateObject.numberOfAttendees = updateObject.attendees.length;
+  }
+
+  const eventsCollection = await events();
+  const updateData = { $set: updateObject };
+
+  const updatedInfo = await eventsCollection.findOneAndUpdate(
+    { _id: eventId },
+    updateData,
+    { returnDocument: "after" }
+  );
+
+  if (!updatedInfo.value) {
+    throw "Could not update event.";
+  }
+
+  return updatedInfo.value; 
+};
 
 //Returns a list of all events from the DB.
 export async function getAllEvents() {
