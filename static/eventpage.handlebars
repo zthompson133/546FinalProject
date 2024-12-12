@@ -1,0 +1,42 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="../public/css/main.css" />
+  </head>
+  <body>
+
+    <h1>{{event.name}}</h1>
+
+    <div class="event-details">
+      <img
+        src="{{event.poster}}"
+        alt="{{event.name}} Poster"
+        class="event-poster"
+      />
+      <div class="event-info">
+        <p>Description: {{event.description}}</p>
+        <p>Location: {{event.location}}</p>
+        <p>Organizer: {{event.organizer}}</p>
+        <p>Rating: {{event.rating}}</p>
+        <p>Start Time: {{event.startTime}}</p>
+        <p>End Time: {{event.endTime}}</p>
+        <p>Class: {{event.class}}</p>
+        <p>Attendees: {{event.numberOfAttendees}}</p>
+      </div>
+    </div>
+    <button
+      type="button"
+      onclick="window.location.href='/register'"
+    >Register</button>
+
+    <form class="ib_form" action="/login" method="POST">
+      <button type="submit">Back to Homepage</button>
+    </form>
+
+    <form class="ib_form" action="/myaccount" method="POST">
+      <button type="submit">My Account</button>
+    </form>
+
+  </body>
+</html>
