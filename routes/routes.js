@@ -212,11 +212,18 @@ router
     }
     //check all inputs, that should respond with a 400
     try {
-      eventData.title = helpers.checkString(eventData.name, "Event Title");
-      eventData.date = helpers.checkString(eventData.date, "Event Date");
+      eventData.name = helpers.isValidString(eventData.name, "Event Title");
+      eventData.description = helpers.isValidString(eventData.description, "Event Description");
+      eventData.date = helpers.checkValidDate(eventData.date, "Event Date");
+      eventData.starttime = helpers.isValidTime(eventData.starttime, "Event Start Time");
+      eventData.endtime = helpers.checkEndTime(eventData.starttime, eventData.endtime, 'Event Data Start Time')
       eventData.location = helpers.checkString(eventData.location, "Location");
+      eventData.Class = helpers.isValidClass(eventData.class, "Class")
+      if (eventData.Poster == null) {
+        eventData.Poster = 'default'
+      }
       let theUser = await userData.getUserByEmail(activeUser);
-      let theId = actveUser["_id"];
+      let theId = activeUser["_id"];
       //eventData.organizerId = helpers.checkId(eventData.organizerId, 'Organizer ID');
     } catch (e) {
       return res.status(400).json({ error: e });
@@ -224,12 +231,17 @@ router
 
     //insert the event
     try {
-      const { title, date, location, organizerId } = eventData;
+      const { name, description, date, starttime, endtime, location, organizer, Class, Poster } = eventData;
       const newEvent = await eventData.addEvent(
-        title,
+        name,
+        description,
         date,
+        starttime,
+        endtime,
         location,
-        organizerId
+        organizer,
+        Class,
+        Poster
       );
       return res.json(newEvent);
     } catch (e) {

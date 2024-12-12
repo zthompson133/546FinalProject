@@ -16,22 +16,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function addEvent(name, description, date, starttime, endtime, location, organizer, feedback, rating, attendees, numberOfAttendees, Class, Poster) {
-    name = helpers.isValidString(name)
-    description = helpers.isValidString(description)
+export async function addEvent(name, description, date, starttime, endtime, location, organizer, Class, Poster, feedback, rating, attendees, numberOfAttendees) {
+    name = helpers.isValidString(name, 'name')
+    description = helpers.isValidString(description, 'description')
     helpers.checkValidDate(date, 'Date')
     helpers.isValidTime(starttime, 'Start time')
     helpers.checkEndTime(starttime, endtime, 'End time')
-    location = helpers.isValidString(location)
-    organizer = helpers.isValidString(organizer)
+    location = helpers.isValidString(location, 'location')
+    organizer = helpers.isValidString(organizer, 'organizer')
+    Class = helpers.isValidClass(Class, 'class')
+    if (Poster == null) {
+      Poster = 'default'
+    }
     feedback = []
     rating = 0
     attendees = []
     numberOfAttendees = 0
-    Class = helpers.isValidClass(Class)
-    if (Poster == null) {
-      Poster = 'default'
-    }
 
     let newEvent = {
       name: name,
@@ -41,12 +41,12 @@ export async function addEvent(name, description, date, starttime, endtime, loca
       endtime: endtime,
       location:location,
       organizer: organizer,
+      Class: Class,
+      Poster: Poster,
       feedback: feedback,
       rating: rating,
       attendees: attendees,
-      numberOfAttendees: numberOfAttendees,
-      Class: Class,
-      Poster: Poster
+      numberOfAttendees: numberOfAttendees
     }
 
     const eventsCollection = await events()

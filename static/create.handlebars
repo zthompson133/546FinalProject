@@ -17,10 +17,10 @@
                 <input type="text" id="event-name" name="name" required>
             </div>
 
-            <!-- Host -->
+            <!-- Event Description -->
             <div class="form-group">
-                <label for="event-host">Host</label>
-                <input type="text" id="event-host" name="host" required>
+                <label for="event-description">Event Description</label>
+                <input type="text" id="event-description" name="description" required>
             </div>
 
             <!-- Event Date -->
@@ -29,10 +29,16 @@
                 <input type="date" id="event-date" name="date" required>
             </div>
 
-            <!-- Event Time -->
+            <!-- Event Start Time -->
             <div class="form-group">
-                <label for="event-time">Event Time</label>
-                <input type="time" id="event-time" name="time" required>
+                <label for="event-start-time">Event Time</label>
+                <input type="time" id="event-start-time" name="starttime" required>
+            </div>
+
+            <!-- Event End Time -->
+            <div class="form-group">
+                <label for="event-end-time">Event End Time</label>
+                <input type="time" id="event-end-time" name="endtime" required>
             </div>
 
             <!-- Location -->
@@ -41,35 +47,25 @@
                 <input type="text" id="event-location" name="location" required>
             </div>
 
+            <!-- Host -->
+            <div class="form-group">
+                <label for="event-organizer">Host</label>
+                <input type="text" id="event-organizer" name="organizer" required>
+            </div>
+
             <!-- Audience Selection -->
             <div class="form-group">
-                <label for="audience">Audience</label>
-                <select id="audience" name="audience">
-                    <option value="everyone">Open to everyone</option>
+                <label for="Class">Class</label>
+                <select id="Class" name="Class">
                     <option value="undergraduates">Undergraduates</option>
                     <option value="graduates">Graduates</option>
-                    <option value="major">Specific Major</option>
-                    <option value="other">Other</option>
                 </select>
-                <input type="text" id="major" name="major" placeholder="If 'Specific Major' is selected, specify here">
             </div>
 
             <!-- Flyer Upload -->
             <div class="form-group">
-                <label for="flyer">Flyer (optional)</label>
-                <input type="file" id="flyer" name="flyer" accept="image/*">
-            </div>
-
-            <!-- Registration Deadline -->
-            <div class="form-group">
-                <label for="registration-deadline">Registration Deadline</label>
-                <input type="datetime-local" id="registration-deadline" name="registration_deadline">
-            </div>
-
-            <!-- Unregister Deadline -->
-            <div class="form-group">
-                <label for="unregister-deadline">Unregister Deadline</label>
-                <input type="datetime-local" id="unregister-deadline" name="unregister_deadline">
+                <label for="Poster">Flyer (optional)</label>
+                <input type="file" id="Poster" name="Poster" accept="image/*">
             </div>
 
             <button type="submit" class="btn btn-primary">Create Event</button>
@@ -80,18 +76,18 @@
         // Set default values for optional fields if not provided
         document.querySelector('form').addEventListener('submit', function(event) {
             // Set default flyer image if not uploaded
-            if (!document.getElementById('flyer').files.length) {
-                document.getElementById('flyer').value = 'no-image';
+            if (!document.getElementById('Poster').files.length) {
+                document.getElementById('Poster').value = 'no-image';
             }
 
             // Set default registration deadline to event end time
             if (!document.getElementById('registration-deadline').value) {
-                document.getElementById('registration-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-time').value;
+                document.getElementById('registration-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-start-time').value;
             }
 
             // Set default unregister deadline to event start time
             if (!document.getElementById('unregister-deadline').value) {
-                document.getElementById('unregister-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-time').value;
+                document.getElementById('unregister-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-start-time').value;
             }
         });
     </script>
