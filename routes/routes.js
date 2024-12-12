@@ -377,5 +377,26 @@ router.route("/register/:id").get(async (req, res) => {
     return res.status(404).json({ error: e });
   }
 });
+router.route("/myRegisteredEvents").get(async (req, res) => {
+  //const userId = req.session.user.id;
+  const userId = "675a346fe6c60fc2a8567257";
+  try {
+    const events = await userData.registeredEvents(userId);
+    if (!events) {
+      throw new Error("No Events Found");
+    }
+    console.log({
+      events: events,
+      title: "My Registered Events",
+    });
+    return res.render(path.resolve("static/myRegisteredEvents.handlebars"), {
+      events: events,
+      title: "My Registered Events",
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(404).json({ error: e });
+  }
+});
 
 export default router;

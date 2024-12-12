@@ -223,7 +223,7 @@ export async function registeredEvents(userId) {
     });
     console.log(event);
     const eventDetail = {
-      id: event._id,
+      id: event._id.toString(),
       name: event.name,
       startTIme: event.startTime,
       endTime: event.endTime,
@@ -232,7 +232,7 @@ export async function registeredEvents(userId) {
     eventDetailList.push(eventDetail);
   }
   console.log(eventDetailList);
-  return user;
+  return eventDetailList;
 }
 
 //Changes the password
