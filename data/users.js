@@ -156,11 +156,8 @@ export async function sendEmail(email, field, text) {
       html: "<b>Your " + text + " is " + code + "</b>",
     });
   } catch (e) {
-    throw (
-      "If the following error message incorrect email/password pair, the passwd variable \
-        is probably the wrong value. It is defined at the top of the file.\n" +
-      e
-    );
+    throw "If you are reading this, you probably need to add the .env file to the root directory. I DM'ed \
+      it to everyone on Slack.\n Full error details:" + e;
   }
   const finalUser = await changeField(
     email,
