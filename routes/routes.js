@@ -248,7 +248,7 @@ router
         theClass,
         poster
       );
-      res.render(path.resolve("/static/myCreatedEvents.handlebars"), {});
+      res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: theUser.createdEvents});
     } catch (e) {
       return res.status(400).json({ error: e });
     }
