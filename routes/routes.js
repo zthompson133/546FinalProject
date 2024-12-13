@@ -33,10 +33,7 @@ router.route("/login").post(async (req, res) => {
 router.route("/createaccount").post(async (req, res) => {
   try {
     let theBody = req.body;
-    let signupClass = true;
-    if (theBody.signup_class === "on") {
-      signupClass = false;
-    }
+    let signupClass = helpers.isValidClass(theBody.Class);
     let userObject = await userData.addUser(
       theBody.signup_first_name,
       theBody.signup_last_name,
@@ -121,13 +118,11 @@ router.route("/checkpassword").post(async (req, res) => {
   try {
     theUser = await userData.checkPassword(theEmail, thePassword);
     activeUser = theUser["email"];
-
-    let finalUser = await userData.changeField(activeUser, "verified", true);
-
-    let theEvents = await eventData.getEventsByClass(finalUser.class);
+    //let finalUser = await userData.changeField(activeUser, "verified", true);
+    let theEvents = await eventData.getEventsByClass(theUser.class);
 
     res.render(path.resolve("static/homepage.handlebars"), {
-      user: finalUser,
+      user: theUser,
       events: theEvents,
     });
   } catch (e) {
@@ -143,8 +138,8 @@ router.route("/verifyemail").post(async (req, res) => {
   let thePassword = theBody.ve_password;
   let theCode = theBody.ve_code;
   try {
-    let theUser1 = await userData.checkPassword(theEmail, thePassword);
     let theUser2 = await userData.checkCode(theEmail, theCode);
+    let theUser1 = await userData.checkPassword(theEmail, thePassword);
     if (theUser1["_id"].toString() !== theUser2["_id"].toString()) {
       console.log(
         "Database error. User object returned by checkPassword does \
@@ -157,6 +152,7 @@ router.route("/verifyemail").post(async (req, res) => {
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser1,
       events: theEvents,
+      class: userData.getClass(theUser1.class),
     });
   } catch (e) {
     res.render(path.resolve("static/accounterror.handlebars"), {
@@ -187,9 +183,15 @@ router.route("/myprofile").post(async (req, res) => {
 router.route("/searchevents").post(async (req, res) => {
   //Not done yet
 });
-router.route("/createevent").post(async (req, res) => {
-  res.render(path.resolve("static/create.handlebars"));
-});
+router
+  .route("/createevent")
+  .get(async (req, res) => {
+    res.render(path.resolve("static/create.handlebars"));
+  })
+  .post(async (req, res) => {
+    console.log(req.body);
+    res.render(path.resolve("static/create.handlebars"));
+  });
 router
   .route("/events")
   .get(async (req, res) => {
@@ -203,7 +205,7 @@ router
   })
   .post(async (req, res) => {
     //create a new event after validating inputs
-    const eventData = req.body;
+    const theBody = req.body;
     //make sure there is something present in the req.body
     if (!eventData || Object.keys(eventData).length === 0) {
       return res
@@ -212,46 +214,52 @@ router
     }
     //check all inputs, that should respond with a 400
     try {
-      eventData.name = helpers.isValidString(eventData.name, "Event Title");
-      eventData.description = helpers.isValidString(eventData.description, "Event Description");
-      eventData.date = helpers.checkValidDate(eventData.date, "Event Date");
-      eventData.starttime = helpers.isValidTime(eventData.starttime, "Event Start Time");
-      eventData.endtime = helpers.checkEndTime(eventData.starttime, eventData.endtime, 'Event Data Start Time')
-      eventData.location = helpers.checkString(eventData.location, "Location");
-      eventData.Class = helpers.isValidClass(eventData.class, "Class")
-      if (eventData.Poster == null) {
-        eventData.Poster = 'default'
+      let eventName = helpers.isValidString(theBody.name, "Event Title");
+      let description = helpers.isValidString(
+        theBody.description,
+        "Event Description"
+      );
+      helpers.checkValidDate(theBody.date, "Event Date");
+      let starttime = helpers.isValidTime(
+        theBody.starttime,
+        "Event Start Time"
+      );
+      let endtime = helpers.checkEndTime(
+        theBody.starttime,
+        theBody.endtime,
+        "Event Data Start Time"
+      );
+      let location = helpers.checkString(theBody.location, "Location");
+      let theClass = helpers.isValidClass(theBody.Class, "Class");
+      let poster = "default";
+      if (theBody.Poster !== "") {
+        poster = theBody.Poster;
       }
       let theUser = await userData.getUserByEmail(activeUser);
-      let theId = activeUser["_id"];
-      //eventData.organizerId = helpers.checkId(eventData.organizerId, 'Organizer ID');
-    } catch (e) {
-      return res.status(400).json({ error: e });
-    }
-
-    //insert the event
-    try {
-      const { name, description, date, starttime, endtime, location, organizer, Class, Poster } = eventData;
+      let organizer = theUser["email"];
       const newEvent = await eventData.addEvent(
-        name,
+        eventName,
         description,
-        date,
+        theBody.date,
         starttime,
         endtime,
         location,
         organizer,
-        Class,
-        Poster
+        theClass,
+        poster
       );
-      return res.json(newEvent);
+      res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: theUser.createdEvents});
     } catch (e) {
-      return res.status(500).json({ error: e });
+      return res.status(400).json({ error: e });
     }
   });
 
 router
   .route("/events/:id")
   .get(async (req, res) => {
+    if (!activeUser) {
+      res.render(path.resolve("/static/landingpage.handlebars"));
+    }
     try {
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
@@ -259,12 +267,8 @@ router
     }
     //try getting the event by ID
     try {
-      /*if (req.session.user) {
-        const userId = req.session.user.id;
-      }*/
-      const userId = "675a9e8299e6525b711cb844";
-
-      const user = await userData.getUserById(userId);
+      let user = await userData.getUserByEmail(activeUser);
+      let userId = user["_id"];
       let studentRegistered = false;
       user.registeredEvents.forEach((e) => {
         if (e === req.params.id) {
@@ -287,6 +291,9 @@ router
   })
   .put(async (req, res) => {
     //update an events details (all fields)
+    if (!activeUser) {
+      res.render(path.resolve("/static/landingpage.handlebars"));
+    }
     const updatedData = req.body;
     //make sure there is something in the req.body
     if (!updatedData || Object.keys(updatedData).length === 0) {
@@ -384,6 +391,11 @@ router
   });
 
 router.route("/register/:id").get(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+  }
+  let theUser = await userData.getUserByEmail(activeUser);
+  let userId = theUser["_id"];
   try {
     req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
   } catch (e) {
@@ -394,10 +406,7 @@ router.route("/register/:id").get(async (req, res) => {
     if (!event) {
       throw new Error("No Event exists with that ID");
     }
-    const register = await eventData.registerForEvent(
-      req.params.id,
-      /*req.session.user.id*/ "675a9e8299e6525b711cb844"
-    );
+    const register = await eventData.registerForEvent(req.params.id, userId);
     if (register) {
       return res.redirect("/events/" + req.params.id);
     } else {
@@ -409,6 +418,11 @@ router.route("/register/:id").get(async (req, res) => {
   }
 });
 router.route("/unregister/:id").get(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+  }
+  let theUser = await userData.getUserByEmail(activeUser);
+  let userId = theUser["_id"];
   try {
     req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
   } catch (e) {
@@ -421,7 +435,7 @@ router.route("/unregister/:id").get(async (req, res) => {
     }
     const unregister = await eventData.unregisterFromEvent(
       req.params.id,
-      /*req.session.user.id*/ "675a9e8299e6525b711cb844"
+      userId
     );
     if (unregister) {
       return res.redirect("/events/" + req.params.id);
@@ -434,8 +448,11 @@ router.route("/unregister/:id").get(async (req, res) => {
   }
 });
 router.route("/myRegisteredEvents").get(async (req, res) => {
-  //const userId = req.session.user.id;
-  const userId = "675a346fe6c60fc2a8567257";
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+  }
+  let theUser = await userData.getUserByEmail(activeUser);
+  let userId = theUser["_id"];
   try {
     const events = await userData.registeredEvents(userId);
     if (!events) {

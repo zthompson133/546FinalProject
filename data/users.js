@@ -89,6 +89,9 @@ export async function addUser(first, last, email, theClass, p1, p2) {
   //The DB stores the password hashed twice, aka the hash of the hash of the password.
   theUser["password"] = helpers.doubleHash(p1);
   theUser["verificationCode"] = "";
+  theUser["createdEvents"] = [];
+  theUser["registeredEvents"] = [];
+  theUser["attendedEvents"] = [];
   /* ^This will contain the verification code that is sent to the user. It is randomly generated
     and added by sendEmail. */
   const theUsers = await users();
@@ -153,11 +156,8 @@ export async function sendEmail(email, field, text) {
       html: "<b>Your " + text + " is " + code + "</b>",
     });
   } catch (e) {
-    throw (
-      "If the following error message incorrect email/password pair, the passwd variable \
-        is probably the wrong value. It is defined at the top of the file.\n" +
-      e
-    );
+    throw "If you are reading this, you probably need to add the .env file to the root directory. I DM'ed \
+      it to everyone on Slack.\n Full error details:" + e;
   }
   const finalUser = await changeField(
     email,
@@ -182,8 +182,8 @@ export async function checkCode(email, code) {
   if (theUser["verificationCode"] !== hash) {
     throw "Incorrect verification code.";
   }
-  finalUser = await changeField(theUser["email"], "emailVerified", true);
-  return theUser;
+  let finalUser = await changeField(theUser["email"], "emailVerified", true);
+  return finalUser;
 }
 
 //Checks the email/password pair, and checks if the user has verified their account.

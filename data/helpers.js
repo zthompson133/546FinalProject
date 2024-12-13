@@ -37,95 +37,88 @@ export function checkId(id, varName) {
 }
 
 export function checkValidDate(date, varName) {
-    if (!date) {
-        throw `${varName} cannot be null or undefined`;
-    }
+  if (!date) {
+    throw `${varName} cannot be null or undefined`;
+  }
 
-    const inputDate = new Date(date);
-    if (isNaN(inputDate.getTime())) {
-        throw `${varName} must be a valid date`;
-    }
+  const [year, month, day] = date.split('-').map(Number);
+  
+  const inputDate = new Date(year, month - 1, day);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  if (isNaN(inputDate.getTime())) {
+    throw `${varName} must be a valid date`;
+  }
 
-    if (inputDate < today) {
-        throw `${varName} must be a future date`;
-    }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    return true;
+  if (inputDate < today) {
+    throw `${varName} must be a future date`;
+  }
+
+  return true;
 }
 
 export function isValidTime(time, varName) {
-    if (!time || typeof time !== 'string') {
-        throw `${varName} must be a valid time string in HH:MM format`;
-    }
+  if (!time || typeof time !== "string") {
+    throw `${varName} must be a valid time string in HH:MM format`;
+  }
+  const [hours, minutes] = time.split(":").map(Number);
+  if (
+    isNaN(hours) ||
+    isNaN(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    throw `${varName} must be a valid time in HH:MM format`;
+  }
 
-    const [hours, minutes] = time.split(':').map(Number);
-    if (
-        isNaN(hours) || isNaN(minutes) ||
-        hours < 0 || hours > 23 ||
-        minutes < 0 || minutes > 59
-    ) {
-        throw `${varName} must be a valid time in HH:MM format`;
-    }
-
-    return true;
+  return time;
 }
 
 export function checkEndTime(startTime, endTime, varName) {
-    if (!startTime || !endTime) {
-        throw `${varName} requires both start time and end time`;
-    }
+  if (!startTime || !endTime) {
+    throw `${varName} requires both start time and end time`;
+  }
 
-    isValidTime(startTime, `${varName} startTime`);
-    isValidTime(endTime, `${varName} endTime`);
+  isValidTime(startTime, `${varName} startTime`);
+  isValidTime(endTime, `${varName} endTime`);
 
-    const [startHours, startMinutes] = startTime.split(':').map(Number);
-    const [endHours, endMinutes] = endTime.split(':').map(Number);
+  const [startHours, startMinutes] = startTime.split(":").map(Number);
+  const [endHours, endMinutes] = endTime.split(":").map(Number);
 
-    const startDateTime = new Date();
-    startDateTime.setHours(startHours, startMinutes, 0, 0);
+  const startDateTime = new Date();
+  startDateTime.setHours(startHours, startMinutes, 0, 0);
 
-    const endDateTime = new Date();
-    endDateTime.setHours(endHours, endMinutes, 0, 0);
+  const endDateTime = new Date();
+  endDateTime.setHours(endHours, endMinutes, 0, 0);
 
-    if (endDateTime <= startDateTime) {
-        throw `${varName} endTime must be after startTime`;
-    }
+  if (endDateTime <= startDateTime) {
+    throw `${varName} endTime must be after startTime`;
+  }
 
-    return true;
+  return endTime;
 }
 
 export function isValidClass(string, varName) {
-    if (string == null) {
-        throw `${varName} must be provided`
-    }
-    
-    if (typeof(string) !== 'string') {
-        throw `${varName} provided must be a string`
-    }
-
-    if (string.trim() === "") {
-        throw `${varName} cannot be empty`
-    }
-
-    if (string.trim().toLowerCase() !== 'graduate' & string.trim().toLowerCase() !== 'undergraduate') {
-        throw "Class must be graduate or undergraduate"
-    }
-
-    return string.trim().toLowerCase()
+  string = checkString(string, varName).toLowerCase();
+  if (string !== "graduate" && string !== "undergraduate") {
+    throw "Class must be graduate or undergraduate";
+  }
+  return string
 }
 
-export function isValidString (string, name) {
-    if (string == null) {
-        throw `String must be provided for ${name}`
-    }
-    if (typeof(string) !== 'string') {
-        throw `Input provided for ${name} must be a string`
-    }
-    if (string.trim() === "") {
-        throw `${name} cannot be empty`
-    }
-    return string.trim()
+export function isValidString(string, name) {
+  if (string == null) {
+    throw `String must be provided for ${name}`;
+  }
+  if (typeof string !== "string") {
+    throw `Input provided for ${name} must be a string`;
+  }
+  if (string.trim() === "") {
+    throw `${name} cannot be empty`;
+  }
+  return string.trim();
 }
