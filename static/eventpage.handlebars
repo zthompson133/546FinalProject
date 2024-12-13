@@ -1,55 +1,74 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
     <link rel="stylesheet" href="../public/css/main.css" />
   </head>
-  <body>
+  <body class="event-details-page">
+    <header>
+      <h1 class="event-title">{{event.name}}</h1>
+    </header>
 
-    <h1>{{event.name}}</h1>
-
-    <div class="event-details">
-      <img
-        src="{{event.poster}}"
-        alt="{{event.name}} Poster"
-        class="event-poster"
-      />
-      <div class="event-info">
-        <p>Description: {{event.description}}</p>
-        <p>Location: {{event.location}}</p>
-        <p>Organizer: {{event.organizer}}</p>
-        <p>Rating: {{event.rating}}</p>
-        <p>Start Time: {{event.startTime}}</p>
-        <p>End Time: {{event.endTime}}</p>
-        <p>Class: {{event.class}}</p>
-        <p>Attendees: {{event.numberOfAttendees}}</p>
+    <main class="event-details">
+      <div class="event-poster-container"><!--"{{event.poster}}"-->
+        <img
+          src="../public/imgs/EventPage.jpg"
+          alt="{{event.name}} Poster"
+          class="event-poster"
+        />
       </div>
-    </div>
+      <div class="event-info">
+        <p><strong>Description:</strong> {{event.description}}</p>
+        <p><strong>Location:</strong> {{event.location}}</p>
+        <p><strong>Organizer:</strong> {{event.organizer}}</p>
+        <p><strong>Rating:</strong> {{event.rating}}</p>
+        <p><strong>Start Time:</strong>
+          <span class="event-time">{{event.startTime}}</span></p>
+        <p><strong>End Time:</strong>
+          <span class="event-time">{{event.endTime}}</span></p>
+        <p><strong>Class:</strong> {{event.class}}</p>
+        <p><strong>Attendees:</strong> {{event.numberOfAttendees}}</p>
+      </div>
+    </main>
 
-    {{#if studentRegistered}}
-      <button type="button" disabled>You are Already Registered</button>
-      <button
-        type="button"
-        onclick="window.location.href='/unregister/{{event._id}}'"
-      >Unregister</button>
-    {{else}}
-      {{#if eligible}}
+    <section class="action-buttons">
+      {{#if studentRegistered}}
+        <button type="button" class="btn btn-disabled" disabled>
+          You are Already Registered
+        </button>
         <button
           type="button"
-          onclick="window.location.href='/register/{{event._id}}'"
-        >Register</button>
+          class="btn btn-secondary"
+          onclick="window.location.href='/unregister/{{event._id}}'"
+        >
+          Unregister
+        </button>
       {{else}}
-        <button type="button" disabled>You can't Register</button>
+        {{#if eligible}}
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="window.location.href='/register/{{event._id}}'"
+          >
+            Register
+          </button>
+        {{else}}
+          <button type="button" class="btn btn-disabled" disabled>
+            You can't Register
+          </button>
+        {{/if}}
       {{/if}}
-    {{/if}}
+    </section>
 
-    <form class="ib_form" action="/login" method="POST">
-      <button type="submit">Back to Homepage</button>
-    </form>
-
-    <form class="ib_form" action="/myaccount" method="POST">
-      <button type="submit">My Account</button>
-    </form>
-
+    <footer class="footer-navigation">
+      <form action="/login" method="POST">
+        <button type="submit" class="footer-btn">Back to Homepage</button>
+      </form>
+      <form action="/myaccount" method="POST">
+        <button type="submit" class="footer-btn">My Account</button>
+      </form>
+    </footer>
   </body>
+
 </html>
