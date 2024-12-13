@@ -1,95 +1,97 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Event</title>
-    <link rel="stylesheet" href="../public/css/main.css"> 
-</head>
-<body>
+    <link rel="stylesheet" href="../public/css/main.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>Create a New Event</h1>
-        <!--<form action="/events" method="POST" enctype="multipart/form-data">-->
-        <form action="/events" method="POST">
-            <!-- Event Name -->
-            <div class="form-group">
-                <label for="event-name">Event Name</label>
-                <input type="text" id="event-name" name="name" required>
-            </div>
+      <h1>Create a New Event</h1>
+      <!--<form action="/events" method="POST" enctype="multipart/form-data">-->
+      <form action="/createevent" method="POST">
+        <!-- Event Name -->
+        <div class="form-group">
+          <label for="event-name">Event Name</label>
+          <input type="text" id="event-name" name="name" required />
+        </div>
 
-            <!-- Event Description -->
-            <div class="form-group">
-                <label for="event-description">Event Description</label>
-                <input type="text" id="event-description" name="description" required>
-            </div>
+        <!-- Event Description -->
+        <div class="form-group">
+          <label for="event-description">Event Description</label>
+          <input
+            type="text"
+            id="event-description"
+            name="description"
+            required
+          />
+        </div>
 
-            <!-- Event Date -->
-            <div class="form-group">
-                <label for="event-date">Event Date</label>
-                <input type="date" id="event-date" name="date" required>
-            </div>
+        <!-- Event Date -->
+        <div class="form-group">
+          <label for="event-date">Event Date</label>
+          <input type="date" id="event-date" name="date" required />
+        </div>
 
-            <!-- Event Start Time -->
-            <div class="form-group">
-                <label for="event-start-time">Event Time</label>
-                <input type="time" id="event-start-time" name="starttime" required>
-            </div>
+        <!-- Event Start Time -->
+        <div class="form-group">
+          <label for="event-start-time">Event Time</label>
+          <input type="time" id="event-start-time" name="starttime" required />
+        </div>
 
-            <!-- Event End Time -->
-            <div class="form-group">
-                <label for="event-end-time">Event End Time</label>
-                <input type="time" id="event-end-time" name="endtime" required>
-            </div>
+        <!-- Event End Time -->
+        <div class="form-group">
+          <label for="event-end-time">Event End Time</label>
+          <input type="time" id="event-end-time" name="endtime" required />
+        </div>
 
-            <!-- Location -->
-            <div class="form-group">
-                <label for="event-location">Location</label>
-                <input type="text" id="event-location" name="location" required>
-            </div>
+        <!-- Location -->
+        <div class="form-group">
+          <label for="event-location">Location</label>
+          <input type="text" id="event-location" name="location" required />
+        </div>
 
-            <!-- Host -->
-            <div class="form-group">
-                <label for="event-organizer">Host</label>
-                <input type="text" id="event-organizer" name="organizer" required>
-            </div>
+        <!-- Host -->
+        <div class="form-group">
+          <label for="event-organizer">Host Email ID</label>
+          <input type="email" id="event-organizer" name="organizer" required />
+        </div>
 
-            <!-- Audience Selection -->
-            <div class="form-group">
-                <label for="Class">Class</label>
-                <select id="Class" name="Class">
-                    <option value="undergraduate">Undergraduate</option>
-                    <option value="graduate">Graduate</option>
-                </select>
-            </div>
+        <!-- Audience Selection -->
+        <div class="form-group">
+          <label for="Class">Class</label>
+          <select id="Class" name="Class">
+            <option value="undergraduate">Undergraduate</option>
+            <option value="graduate">Graduate</option>
+          </select>
+        </div>
 
-            <!-- Flyer Upload -->
-            <div class="form-group">
-                <label for="Poster">Flyer (optional)</label>
-                <input type="file" id="Poster" name="Poster" accept="image/*">
-            </div>
+        <!-- Flyer Upload -->
+        <div class="form-group">
+          <label for="Poster">Flyer (optional)</label>
+          <input type="file" id="Poster" name="Poster" accept="image/*" />
+        </div>
 
-            <button type="submit" class="btn btn-primary">Create Event</button>
-        </form>
+        <button type="submit" class="btn btn-primary">Create Event</button>
+      </form>
     </div>
 
     <script>
-        // Set default values for optional fields if not provided
-        document.querySelector('form').addEventListener('submit', function(event) {
-            // Set default flyer image if not uploaded
-            if (!document.getElementById('Poster').files.length) {
-                document.getElementById('Poster').value = 'no-image';
-            }
-
-            // Set default registration deadline to event end time
-            if (!document.getElementById('registration-deadline').value) {
-                document.getElementById('registration-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-start-time').value;
-            }
-
-            // Set default unregister deadline to event start time
-            if (!document.getElementById('unregister-deadline').value) {
-                document.getElementById('unregister-deadline').value = document.getElementById('event-date').value + 'T' + document.getElementById('event-start-time').value;
-            }
-        });
+      /*// Set default values for optional fields if not provided
+      document.querySelector('form').addEventListener('submit', function(event)
+      { // Set default flyer image if not uploaded if
+      (!document.getElementById('Poster').files.length) {
+      document.getElementById('Poster').value = 'no-image'; } // Set
+      defaultregistration deadline to event end time if
+      (!document.getElementById('registration-deadline').value) {
+      document.getElementById('registration-deadline').value =
+      document.getElementById('event-date').value + 'T' +
+      document.getElementById('event-start-time').value; } // Set default
+      unregister deadline to event start time if
+      (!document.getElementById('unregister-deadline').value) {
+      document.getElementById('unregister-deadline').value =
+      document.getElementById('event-date').value + 'T' +
+      document.getElementById('event-start-time').value; } });*/
     </script>
-</body>
+  </body>
 </html>

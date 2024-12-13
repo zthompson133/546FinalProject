@@ -152,7 +152,7 @@ router.route("/verifyemail").post(async (req, res) => {
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser1,
       events: theEvents,
-      class: userData.getClass(theUser1.class)
+      class: userData.getClass(theUser1.class),
     });
   } catch (e) {
     res.render(path.resolve("static/accounterror.handlebars"), {
@@ -183,9 +183,15 @@ router.route("/myprofile").post(async (req, res) => {
 router.route("/searchevents").post(async (req, res) => {
   //Not done yet
 });
-router.route("/createevent").post(async (req, res) => {
-  res.render(path.resolve("static/create.handlebars"));
-});
+router
+  .route("/createevent")
+  .get(async (req, res) => {
+    res.render(path.resolve("static/create.handlebars"));
+  })
+  .post(async (req, res) => {
+    console.log(req.body);
+    res.render(path.resolve("static/create.handlebars"));
+  });
 router
   .route("/events")
   .get(async (req, res) => {
@@ -209,10 +215,20 @@ router
     //check all inputs, that should respond with a 400
     try {
       let eventName = helpers.isValidString(theBody.name, "Event Title");
-      let description = helpers.isValidString(theBody.description, "Event Description");
+      let description = helpers.isValidString(
+        theBody.description,
+        "Event Description"
+      );
       let date = helpers.checkValidDate(theBody.date, "Event Date");
-      let starttime = helpers.isValidTime(theBody.starttime, "Event Start Time");
-      let endtime = helpers.checkEndTime(theBody.starttime, theBody.endtime, 'Event Data Start Time')
+      let starttime = helpers.isValidTime(
+        theBody.starttime,
+        "Event Start Time"
+      );
+      let endtime = helpers.checkEndTime(
+        theBody.starttime,
+        theBody.endtime,
+        "Event Data Start Time"
+      );
       let location = helpers.checkString(theBody.location, "Location");
       let theClass = helpers.isValidClass(theBody.Class, "Class");
       let poster = "default";
@@ -241,7 +257,7 @@ router
 router
   .route("/events/:id")
   .get(async (req, res) => {
-    if(!activeUser) {
+    if (!activeUser) {
       res.render(path.resolve("/static/landingpage.handlebars"));
     }
     try {
@@ -275,7 +291,7 @@ router
   })
   .put(async (req, res) => {
     //update an events details (all fields)
-    if(!activeUser) {
+    if (!activeUser) {
       res.render(path.resolve("/static/landingpage.handlebars"));
     }
     const updatedData = req.body;
@@ -375,7 +391,7 @@ router
   });
 
 router.route("/register/:id").get(async (req, res) => {
-  if(!activeUser) {
+  if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
   }
   let theUser = await userData.getUserByEmail(activeUser);
@@ -402,7 +418,7 @@ router.route("/register/:id").get(async (req, res) => {
   }
 });
 router.route("/unregister/:id").get(async (req, res) => {
-  if(!activeUser) {
+  if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
   }
   let theUser = await userData.getUserByEmail(activeUser);
@@ -417,7 +433,10 @@ router.route("/unregister/:id").get(async (req, res) => {
     if (!event) {
       throw new Error("No Event exists with that ID");
     }
-    const unregister = await eventData.unregisterFromEvent(req.params.id, userId);
+    const unregister = await eventData.unregisterFromEvent(
+      req.params.id,
+      userId
+    );
     if (unregister) {
       return res.redirect("/events/" + req.params.id);
     } else {
@@ -429,7 +448,7 @@ router.route("/unregister/:id").get(async (req, res) => {
   }
 });
 router.route("/myRegisteredEvents").get(async (req, res) => {
-  if(!activeUser) {
+  if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
   }
   let theUser = await userData.getUserByEmail(activeUser);
