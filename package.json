@@ -74,6 +74,7 @@
     "toidentifier": "^1.0.1",
     "type-is": "^1.6.18",
     "unpipe": "^1.0.0",
+    "update": "^0.7.4",
     "util": "^0.10.4",
     "utils-merge": "^1.0.1",
     "vary": "^1.1.2"

@@ -70,7 +70,7 @@ export function isValidTime(time, varName) {
         throw `${varName} must be a valid time in HH:MM format`;
     }
 
-    return true;
+    return time;
 }
 
 export function checkEndTime(startTime, endTime, varName) {
@@ -98,23 +98,11 @@ export function checkEndTime(startTime, endTime, varName) {
 }
 
 export function isValidClass(string, varName) {
-    if (string == null) {
-        throw `${varName} must be provided`
+    string = checkString(string, varName).toLowerCase();
+    if (string !== 'graduate' && string !== 'undergraduate') {
+        throw "Class must be graduate or undergraduate";
     }
-    
-    if (typeof(string) !== 'string') {
-        throw `${varName} provided must be a string`
-    }
-
-    if (string.trim() === "") {
-        throw `${varName} cannot be empty`
-    }
-
-    if (string.trim().toLowerCase() !== 'graduate' & string.trim().toLowerCase() !== 'undergraduate') {
-        throw "Class must be graduate or undergraduate"
-    }
-
-    return string.trim().toLowerCase()
+    return string === "graduate";
 }
 
 export function isValidString (string, name) {
