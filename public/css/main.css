@@ -1,145 +1,145 @@
 .is-prime {
-  color: green;
+	color: green;
 }
 .not-prime {
-  color: red;
+	color: red;
 }
 body {
-  font-family: Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 button {
-  padding: 1px 4px;
-  text-decoration: none;
-  cursor: pointer;
-  background-color: white;
-  color: black;
-  font: bold;
-  border: 2px solid black;
-  border-radius: 4px;
-  font-size: 16px;
+	padding: 1px 4px;
+	text-decoration: none;
+	cursor: pointer;
+	background-color: white;
+	color: black;
+	font: bold;
+	border: 2px solid black;
+	border-radius: 4px;
+	font-size: 16px;
 }
 button:hover {
-  background-color: black;
-  color: white;
-  border: 2px solid black;
+	background-color: black;
+	color: white;
+	border: 2px solid black;
 }
 #error {
-  color: red;
+	color: red;
 }
 .ib_form {
-  display: inline-block;
+	display: inline-block;
 }
 
 .event-details-page {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
-  color: #333;
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f8f9fa;
+	color: #333;
 }
 
 .event-details-page header {
-  text-align: center;
-  background-color: #007bff;
-  color: white;
-  padding: 20px 0;
+	text-align: center;
+	background-color: #007bff;
+	color: white;
+	padding: 20px 0;
 }
 
 .event-details-page .event-title {
-  font-size: 2.5rem;
-  margin: 0;
+	font-size: 2.5rem;
+	margin: 0;
 }
 
 .event-details-page .event-details {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
-  gap: 20px;
+	display: flex;
+	justify-content: space-around;
+	padding: 20px;
+	gap: 20px;
 }
 
 .event-details-page .event-poster-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 20px 0;
 }
 
 .event-details-page .event-poster {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 300px;
+	height: auto;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .event-details-page .event-info {
-  flex: 2;
-  font-size: 1.1rem;
-  line-height: 1.6;
+	flex: 2;
+	font-size: 1.1rem;
+	line-height: 1.6;
 }
 
 .event-details-page .event-time {
-  font-weight: bold;
-  color: #007bff;
+	font-weight: bold;
+	color: #007bff;
 }
 
 .event-details-page .action-buttons {
-  text-align: center;
-  margin: 20px 0;
+	text-align: center;
+	margin: 20px 0;
 }
 
 .event-details-page .btn {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+	padding: 10px 20px;
+	font-size: 1rem;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s;
 }
 
 .event-details-page .btn-primary {
-  background-color: #007bff;
-  color: white;
+	background-color: #007bff;
+	color: white;
 }
 
 .event-details-page .btn-primary:hover {
-  background-color: #0056b3;
+	background-color: #0056b3;
 }
 
 .event-details-page .btn-secondary {
-  background-color: #6c757d;
-  color: white;
+	background-color: #6c757d;
+	color: white;
 }
 
 .event-details-page .btn-secondary:hover {
-  background-color: #5a6268;
+	background-color: #5a6268;
 }
 
 .event-details-page .btn-disabled {
-  background-color: #e0e0e0;
-  color: #6c757d;
-  cursor: not-allowed;
+	background-color: #e0e0e0;
+	color: #6c757d;
+	cursor: not-allowed;
 }
 
 .event-details-page .footer-navigation {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  background-color: #f1f1f1;
-  padding: 15px 0;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	background-color: #f1f1f1;
+	padding: 15px 0;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
 }
 
 .event-details-page .footer-btn {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+	padding: 10px 20px;
+	font-size: 1rem;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .event-details-page .footer-btn:hover {
-  background-color: #ddd;
+	background-color: #ddd;
 }
