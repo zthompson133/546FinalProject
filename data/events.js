@@ -88,9 +88,8 @@ export async function addEvent(
     throw "Could not add event";
   }
   const newId = insertInfo.insertedId.toString();
-  const event = await eventsData.getEventByID(newId);
-  console.log(`Kotha ID : ${newId}`);
-  //let theUser = await usersData.getUserById(organizer);
+  const event = await getEventByID(newId);
+  console.log(event)
   if (!user["createdEvents"]) {
     user["createdEvents"] = [];
     //user["createdEvents"].push("hahaha");

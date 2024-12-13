@@ -219,7 +219,7 @@ router
         theBody.description,
         "Event Description"
       );
-      let date = helpers.checkValidDate(theBody.date, "Event Date");
+      helpers.checkValidDate(theBody.date, "Event Date");
       let starttime = helpers.isValidTime(
         theBody.starttime,
         "Event Start Time"
@@ -236,11 +236,11 @@ router
         poster = theBody.Poster;
       }
       let theUser = await userData.getUserByEmail(activeUser);
-      let organizer = theUser["_id"];
+      let organizer = theUser["email"];
       const newEvent = await eventData.addEvent(
         eventName,
         description,
-        date,
+        theBody.date,
         starttime,
         endtime,
         location,

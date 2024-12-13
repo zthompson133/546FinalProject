@@ -41,7 +41,10 @@ export function checkValidDate(date, varName) {
     throw `${varName} cannot be null or undefined`;
   }
 
-  const inputDate = new Date(date);
+  const [year, month, day] = date.split('-').map(Number);
+  
+  const inputDate = new Date(year, month - 1, day);
+
   if (isNaN(inputDate.getTime())) {
     throw `${varName} must be a valid date`;
   }
@@ -60,10 +63,7 @@ export function isValidTime(time, varName) {
   if (!time || typeof time !== "string") {
     throw `${varName} must be a valid time string in HH:MM format`;
   }
-  console.log(time);
   const [hours, minutes] = time.split(":").map(Number);
-  console.log(`${hours} and ${minutes}`);
-  console.log(time.split(":").map(Number));
   if (
     isNaN(hours) ||
     isNaN(minutes) ||
@@ -99,7 +99,7 @@ export function checkEndTime(startTime, endTime, varName) {
     throw `${varName} endTime must be after startTime`;
   }
 
-  return true;
+  return endTime;
 }
 
 export function isValidClass(string, varName) {
@@ -107,7 +107,7 @@ export function isValidClass(string, varName) {
   if (string !== "graduate" && string !== "undergraduate") {
     throw "Class must be graduate or undergraduate";
   }
-  return string === "graduate";
+  return string
 }
 
 export function isValidString(string, name) {
