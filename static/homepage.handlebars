@@ -30,7 +30,7 @@ Page the user sees after they log in.
    <ol>
     {{#each events}}
         <li>     
-          <a href="/events/{{this.id}}"><h2>{{this.name}}</h2></a>
+          <a href="/events/{{this._id}}"><h2>{{this.name}}</h2></a>
           <p><strong>Date:</strong> {{this.date}}</p>
           <p><strong>Start Time:</strong> {{this.starttime}}</p>
           <p><strong>End Time:</strong> {{this.endtime}}</p>

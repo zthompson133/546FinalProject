@@ -122,7 +122,7 @@ router.route("/checkpassword").post(async (req, res) => {
     let theEvents = await eventData.getEventsByClass(theUser.class);
     let activeEvents = []
     const eventList = await eventData.getAllEvents();
-    const now = new Date(); // Local current time
+    const now = new Date();
     for (const event of eventList) {
       const [year, month, day] = event.date.split('-');
       const eventDate = new Date(year, month - 1, day);
@@ -284,6 +284,7 @@ router
       res.render(path.resolve("static/landingpage.handlebars"));
     }
     try {
+      console.log(req.params.id)
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
@@ -300,6 +301,7 @@ router
       });
 
       const event = await eventData.getEventByID(req.params.id);
+      console.log(event)
 
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
