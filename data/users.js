@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 //objects themselves. Not debugged as of 11/26.
 
 export async function getUserById(id) {
-  id = helpers.checkString(id, "id");
+  id = helpers.checkId(id, "UserID");
   if (!ObjectId.isValid(id)) {
     throw "invalid object ID";
   }
@@ -254,8 +254,8 @@ export async function newPassword(email, tempPassword, p1, p2) {
 
 export function getClass(user) {
   if (user["class"]) {
-    return "Undergraduate";
+    return "undergraduate";
   } else {
-    return "Graduate";
+    return "graduate";
   }
 }

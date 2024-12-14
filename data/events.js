@@ -5,6 +5,7 @@ import * as helpers from "./helpers.js";
 import * as usersData from "./users.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import e from "express";
 dotenv.config();
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -155,7 +156,7 @@ export async function getAllEvents() {
 }
 
 export async function getEventByID(id) {
-  helpers.checkArgs(arguments, 1);
+  id = helpers.isValidString(id, 'Event ID')
   const eventCollection = await events();
   const event = await eventCollection.findOne({ _id: new ObjectId(id) });
 
@@ -215,7 +216,9 @@ export async function registerForEvent(eventId, userId) {
           text: `You have successfully registered for the event ${event.name}. 
       **Event Details:**
     * Name: ${event.name}
-    * Start Time: ${event.startTime}
+    * Date: ${event.date}
+    * Start Time: ${event.starttime}
+    * End Time: ${event.endtime}
     * Location: ${event.location} 
     * We look forward to seeing you there!
 
@@ -230,8 +233,10 @@ export async function registerForEvent(eventId, userId) {
     <p>
       **Event Details:**<br>
       * Name: ${event.name}<br>
-      * Start Time: ${event.startTime}<br>
-      * Location: ${event.location}
+      * Date: ${event.date}<br>
+      * Start Time: ${event.starttime}<br>
+      * End Time: ${event.endtime}<br>
+      * Location: ${event.location} 
     </p>
     <p>We look forward to seeing you there!</p>
     <p>Sincerely,</p>
@@ -298,7 +303,9 @@ export async function unregisterFromEvent(eventId, userId) {
         text: `You have successfully unregistered for the event ${event.name}. 
     **Event Details:**
   * Name: ${event.name}
-  * Start Time: ${event.startTime}
+  * Date: ${event.date}
+  * Start Time: ${event.starttime}
+  * End Time: ${event.endtime}
   * Location: ${event.location} 
   * we hope to see you at another event soon!
 
@@ -313,8 +320,10 @@ export async function unregisterFromEvent(eventId, userId) {
   <p>
     **Event Details:**<br>
     * Name: ${event.name}<br>
-    * Start Time: ${event.startTime}<br>
-    * Location: ${event.location}
+      * Date: ${event.date}<br>
+      * Start Time: ${event.starttime}<br>
+      * End Time: ${event.endtime}<br>
+      * Location: ${event.location} 
   </p>
   <p>we hope to see you at another event soon!</p>
   <p>Sincerely,</p>
@@ -337,7 +346,7 @@ export async function getEventsByClass(theClass) {
   let finalEvents = [];
   for (let a = 0; a < allEvents.length; a++) {
     let theEvent = allEvents[a];
-    if (theEvent.class === theClass) {
+    if (theEvent.Class === theClass) {
       finalEvents.push(theEvent);
     }
   }
