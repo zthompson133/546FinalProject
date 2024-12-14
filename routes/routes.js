@@ -22,6 +22,7 @@ router.route("/login").post(async (req, res) => {
   if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
+    theEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser,
       events: theEvents,
@@ -98,6 +99,7 @@ router.route("/changepassword").post(async (req, res) => {
       theBody.changepassword_pwd2
     );
     let theEvents = await eventData.getEventsByClass(theUser.class);
+    theEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     activeUser = theUser["email"];
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser,
@@ -135,6 +137,7 @@ router.route("/checkpassword").post(async (req, res) => {
         }
       }
     }
+    activeEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser,
       events: activeEvents,
@@ -162,6 +165,7 @@ router.route("/verifyemail").post(async (req, res) => {
       return false;
     }
     let theEvents = await eventData.getEventsByClass(theUser1.class);
+    theEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     activeUser = theUser1["email"];
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser1,
@@ -200,11 +204,16 @@ router.route("/searchevents").post(async (req, res) => {
 router
   .route("/createevent")
   .get(async (req, res) => {
+    if(!activeUser) {
+      res.render(path.resolve("static/landingpage.handlebars"));
+      return;
+    }
     const user = await userData.getUserByEmail(activeUser)
     let events = []
     for (const event of user.createdEvents) {
       events.push(await eventData.getEventByID(event))
     }
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
     res.render(path.resolve("static/myCreatedEvents.handlebars"), {events: events});
   })
   .post(async (req, res) => {
@@ -215,6 +224,10 @@ router
   .route("/events")
   .get(async (req, res) => {
     //retrieve a list of all events
+    if (!activeUser) {
+      res.render(path.resolve("static/landingpage.handlebars"));
+      return;
+    }
     try {
       const eventList = await eventData.getAllEvents();
       return res.json(eventList);
@@ -226,6 +239,7 @@ router
     //create a new event after validating inputs
     const theBody = req.body;
     //make sure there is something present in the req.body
+    
     if (!eventData || Object.keys(eventData).length === 0) {
       return res
         .status(400)
@@ -254,8 +268,6 @@ router
       if (theBody.Poster !== "") {
         poster = theBody.Poster;
       }
-      let theUser = await userData.getUserByEmail(activeUser);
-      let organizer = theUser["email"];
       const newEvent = await eventData.addEvent(
         eventName,
         description,
@@ -263,14 +275,16 @@ router
         starttime,
         endtime,
         location,
-        organizer,
+        activeUser,
         theClass,
         poster
       );
-      let events = []
+      let theUser = await userData.getUserByEmail(activeUser);
+      let events = [];
       for (const event of theUser.createdEvents) {
         events.push(await eventData.getEventByID(event))
       }
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
       res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: events});
     } catch (e) {
       return res.status(400).json({ error: e });
@@ -282,6 +296,7 @@ router
   .get(async (req, res) => {
     if (!activeUser) {
       res.render(path.resolve("static/landingpage.handlebars"));
+      return;
     }
     try {
       console.log(req.params.id)
@@ -318,6 +333,7 @@ router
     //update an events details (all fields)
     if (!activeUser) {
       res.render(path.resolve("/static/landingpage.handlebars"));
+      return;
     }
     const updatedData = req.body;
     //make sure there is something in the req.body
@@ -357,6 +373,10 @@ router
   })
   .patch(async (req, res) => {
     //update specific fields of an event (partially update)
+    if(!activeUser) {
+      res.render(path.resolve("static/landingpage.handlebars"));
+      return;
+    }
     const requestBody = req.body;
     //check to make sure there is something in req.body
     if (!requestBody || Object.keys(requestBody).length === 0) {
@@ -418,6 +438,7 @@ router
 router.route("/register/:id").get(async (req, res) => {
   if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
   }
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
@@ -445,6 +466,7 @@ router.route("/register/:id").get(async (req, res) => {
 router.route("/unregister/:id").get(async (req, res) => {
   if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
   }
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
@@ -475,6 +497,7 @@ router.route("/unregister/:id").get(async (req, res) => {
 router.route("/myRegisteredEvents").get(async (req, res) => {
   if (!activeUser) {
     res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
   }
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];

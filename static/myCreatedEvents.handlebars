@@ -15,6 +15,7 @@
       <tr>
         <th>Title</th>
         <th>Date</th>
+        <th>Time</th>
         <th>Location</th>
         <th>Actions</th>
       </tr>
@@ -22,15 +23,17 @@
     <tbody>
       {{#each events}}
       <tr>
-        <td>{{this.name}}</td>
+        <td><a href = "/events/{{this._id}}">{{this.name}}</a></td>
         <td>{{this.date}}</td>
+        <td>{{this.starttime}}</td>
         <td>{{this.location}}</td>
         <td>
-          <!-- Link to View -->
-          <a href="/events/{{this._id}}">View</a>
 
           <!-- Link to Edit -->
-          <a href="/edit/{{this._id}}">Edit</a>
+          <form action="/edit/{{this._id}}" method="post" style="display:inline;">
+          <input type="hidden" name="_method">
+          <button type="submit">Edit</button>
+          </form>
 
           <!-- Delete Form -->
           <form action="/events/{{this._id}}" method="post" style="display:inline;">
@@ -46,6 +49,7 @@
   <p>You have not created any events yet.</p>
   {{/if}}
 
-  <a href="/events">Create New Event</a>
+  <form class = "ib_form" action = "/login" method = "POST">
+  <button type = "submit">Back to Homepage</button></form>
 </body>
 </html>

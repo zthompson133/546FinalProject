@@ -6,20 +6,14 @@
     <link rel='stylesheet' href='../public/css/main.css' />
 </head>
 <body>
-    
    <h1>My Profile</h1>
-    <form class = "ib_form" action = "/login" method = "POST">
-    <button type = "submit">Back to Homepage</button></form>
-
-    <form class = "ib_form" action = "/myaccount" method = "POST">
-    <button type = "submit">My Account</button></form></br>
-
     Name: <span>{{user.firstName}} {{user.lastName}}</span></br>
     Email: <span>{{user.email}}</span></br>
     Class: <span>{{class}}</span></br>
     Verified: <span>{{verified}}</span></br>
-    My Registered Events: </br>
-    </hr>
-    My Created Events: </br> 
+    <form class = "ib_form" action = "/login" method = "POST">
+    <button type = "submit">Back to Homepage</button></form>
+    <form class = "ib_form" action = "/myaccount" method = "POST">
+    <button type = "submit">My Account</button></form>
 </body>
 </html>

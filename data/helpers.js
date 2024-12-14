@@ -103,11 +103,15 @@ export function checkEndTime(startTime, endTime, varName) {
 }
 
 export function isValidClass(string, varName) {
+  checkArgs(arguments, 2);
+  if (typeof string == "boolean") {
+    return string;
+  }
   string = checkString(string, varName).toLowerCase();
   if (string !== "graduate" && string !== "undergraduate") {
     throw "Class must be graduate or undergraduate";
   }
-  return string
+  return (string === "graduate");
 }
 
 export function isValidString(string, name) {

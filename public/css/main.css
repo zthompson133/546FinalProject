@@ -29,7 +29,22 @@ button:hover {
 .ib_form {
 	display: inline-block;
 }
-
+table {
+    border-collapse:collapse;
+    margin-bottom:5px;
+}
+th {
+    text-align: left;
+}
+td, th {
+    border: 1px solid black;
+    padding-right: 6px;
+    padding-left: 3px;
+	font-weight:normal;
+}
+a {
+	color:black;
+}
 .event-details-page {
 	font-family: Arial, sans-serif;
 	margin: 0;
