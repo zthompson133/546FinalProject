@@ -186,7 +186,12 @@ router.route("/searchevents").post(async (req, res) => {
 router
   .route("/createevent")
   .get(async (req, res) => {
-    res.render(path.resolve("static/create.handlebars"));
+    const user = await userData.getUserByEmail(activeUser)
+    let events = []
+    for (const event of user.createdEvents) {
+      events.push(await eventData.getEventByID(event))
+    }
+    res.render(path.resolve("static/myCreatedEvents.handlebars"), {events: events});
   })
   .post(async (req, res) => {
     console.log(req.body);
@@ -248,7 +253,11 @@ router
         theClass,
         poster
       );
-      res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: theUser.createdEvents});
+      let events = []
+      for (const event of user.createdEvents) {
+        events.push(await eventData.getEventByID(event))
+      }
+      res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: events});
     } catch (e) {
       return res.status(400).json({ error: e });
     }
@@ -258,7 +267,7 @@ router
   .route("/events/:id")
   .get(async (req, res) => {
     if (!activeUser) {
-      res.render(path.resolve("/static/landingpage.handlebars"));
+      res.render(path.resolve("static/landingpage.handlebars"));
     }
     try {
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
