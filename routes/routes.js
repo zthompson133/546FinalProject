@@ -120,10 +120,24 @@ router.route("/checkpassword").post(async (req, res) => {
     activeUser = theUser["email"];
     //let finalUser = await userData.changeField(activeUser, "verified", true);
     let theEvents = await eventData.getEventsByClass(theUser.class);
-
+    let activeEvents = []
+    const eventList = await eventData.getAllEvents();
+    const now = new Date(); // Local current time
+    for (const event of eventList) {
+      const [year, month, day] = event.date.split('-');
+      const eventDate = new Date(year, month - 1, day);
+      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
+      if (eventDate > now) {
+        activeEvents.push(event);
+      } else if (eventDate.toDateString() === now.toDateString()) {
+        if (eventStartTime > now) {
+          activeEvents.push(event);
+        }
+      }
+    }
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser,
-      events: theEvents,
+      events: activeEvents,
     });
   } catch (e) {
     res.render(path.resolve("static/accounterror.handlebars"), {
@@ -254,7 +268,7 @@ router
         poster
       );
       let events = []
-      for (const event of user.createdEvents) {
+      for (const event of theUser.createdEvents) {
         events.push(await eventData.getEventByID(event))
       }
       res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: events});
