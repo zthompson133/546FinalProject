@@ -499,7 +499,7 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
   try {
-    const events = await userData.registeredEvents(userId);
+    const events = await userData.registeredEvents(userId.toString());
     if (!events) {
       throw new Error("No Events Found");
     }

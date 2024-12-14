@@ -225,8 +225,9 @@ export async function registeredEvents(userId) {
     const eventDetail = {
       id: event._id.toString(),
       name: event.name,
-      startTIme: event.startTime,
-      endTime: event.endTime,
+      date: event.date,
+      starttime: event.starttime,
+      endtime: event.endtime,
       location: event.location,
     };
     eventDetailList.push(eventDetail);

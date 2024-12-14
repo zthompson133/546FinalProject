@@ -102,15 +102,15 @@ export async function updateEvent(eventId, updateObject) {
     helpers.checkValidDate(updateObject.date);
   }
 
-  if (updateObject.startTime) {
-    helpers.isValidTime(updateObject.startTime);
+  if (updateObject.starttime) {
+    helpers.isValidTime(updateObject.starttime);
   }
 
   if (updateObject.endtime) {
-    if (updateObject.startTime) {
-      helpers.checkEndTime(updateObject.startTime, updateObject.endtime);
+    if (updateObject.starttime) {
+      helpers.checkEndTime(updateObject.starttime, updateObject.endtime);
     } else {
-      helpers.checkEndTime(event.startTime, updateObject.endtime);
+      helpers.checkEndTime(event.starttime, updateObject.endtime);
     }
   }
 
