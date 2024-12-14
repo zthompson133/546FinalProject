@@ -29,7 +29,7 @@ export function doubleHash(passwd) {
   return digest2;
 }
 export function checkId(id, varName) {
-  id = checkString(id, "id");
+  id = isValidString(id, "id");
   if (!ObjectId.isValid(id)) {
     throw varName + " is not a valid id.";
   }

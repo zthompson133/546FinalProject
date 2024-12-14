@@ -123,9 +123,8 @@ router.route("/checkpassword").post(async (req, res) => {
     //let finalUser = await userData.changeField(activeUser, "verified", true);
     let theEvents = await eventData.getEventsByClass(theUser.class);
     let activeEvents = []
-    const eventList = await eventData.getAllEvents();
     const now = new Date();
-    for (const event of eventList) {
+    for (const event of theEvents) {
       const [year, month, day] = event.date.split('-');
       const eventDate = new Date(year, month - 1, day);
       const eventStartTime = new Date(`${event.date}T${event.starttime}`);
@@ -316,13 +315,11 @@ router
       });
 
       const event = await eventData.getEventByID(req.params.id);
-      console.log(event)
-
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
         studentRegistered,
-        eligible: user.class === event.class,
+        eligible: user.class === event.Class,
       });
     } catch (e) {
       console.log(e);
@@ -452,7 +449,7 @@ router.route("/register/:id").get(async (req, res) => {
     if (!event) {
       throw new Error("No Event exists with that ID");
     }
-    const register = await eventData.registerForEvent(req.params.id, userId);
+    const register = await eventData.registerForEvent(event._id, userId.toString());
     if (register) {
       return res.redirect("/events/" + req.params.id);
     } else {
