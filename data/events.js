@@ -367,7 +367,7 @@ export async function getEventsByClass(theClass) {
   let finalEvents = [];
   for (let a = 0; a < allEvents.length; a++) {
     let theEvent = allEvents[a];
-    if (theEvent.Class === theClass) {
+    if (theEvent.class === theClass) {
       finalEvents.push(theEvent);
     }
   }
