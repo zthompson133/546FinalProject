@@ -19,17 +19,17 @@ Page the user sees after they log in.
     <button type = "submit">My Registered Events</button></form>
 
     <form class = "ib_form" action = "/pastEvents" method = "GET">
-    <button type = "submit">Past events</button></form>
+    <button type = "submit">Attended events</button></form>
 
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "POST">
     <button type = "submit">Create An Event</button></form> {{/if}}
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "GET">
-    <button type = "submit">View All Created Events</button></form> {{/if}} </br>
-    <h2>Upcoming Events</h2>
+    <button type = "submit">View All Created Events</button></form> {{/if}} </br> </br>
     <form id="eventSearchForm">
     <label for="keyword">Search By Keyword</label>
     <input id="keyword" type="text">
     <button class = "buttoninput" type="submit">Search Events</button>
+    <h2>Upcoming Events</h2>
     </form>
 
     <span class = "errorcss" id = "noinput">Error: No search term inputted.</span>

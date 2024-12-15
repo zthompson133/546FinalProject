@@ -36,6 +36,49 @@ export function checkId(id, varName) {
   return id;
 }
 
+export function isValidPassword(string) {
+  if (string == null) {
+      throw "Password cannot be empty"
+  }
+  if (string.length < 8) {
+      throw "Password must be at least 8 digits long"
+  }
+  let spaces = 0
+  let lowercase = 0
+  let uppercase = 0
+  let number = 0
+  let special = 0
+  for (const letter of string) {
+      if (letter === " ") {
+          spaces++
+      }
+      if (letter === letter.toLowerCase() && letter !== letter.toUpperCase()) {
+          lowercase++
+      }
+      if (letter === letter.toUpperCase() && letter !== letter.toLowerCase()) {
+          uppercase++
+      }
+      if (Number.isInteger(parseInt(letter))) {
+          number++
+      }
+      if (/[^a-zA-Z0-9]/.test(letter)) {
+          special++
+      }
+  }
+  if (spaces > 0) {
+      throw "Password cannot contain a space"
+  }
+  if (uppercase < 1) {
+      throw "Password must contain at least one uppercase letter"
+  }
+  if (special < 1) {
+      throw "Password must contain at least on special character"
+  }
+  if (number < 1) {
+      throw "Password must contain at least one number"
+  }
+}
+
 export function checkValidDate(date, varName) {
   if (!date) {
     throw `${varName} cannot be null or undefined`;

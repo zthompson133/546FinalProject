@@ -62,6 +62,7 @@ export async function addUser(first, last, email, theClass, p1, p2) {
   last = helpers.checkString(last, "Last name");
   email = helpers.checkString(email, "Email address");
   //checkString trims leading/trailing spaces, so it should not be applied to passwords.
+  helpers.isValidPassword(p1)
   if (p1 !== p2) {
     throw "Passwords do not match.";
   }
@@ -194,11 +195,11 @@ export async function checkPassword(email, password) {
   let theUser = await getUserByEmail(email);
   password = helpers.checkString(password, "password");
   if (!theUser) {
-    throw "No user exists with that email.";
+    throw "Email or Password is incorrect.";
   }
   let hash = helpers.doubleHash(password);
   if (theUser["password"] !== hash) {
-    throw "Incorrect password.";
+    throw "Email or Password is incorrect.";
   }
   if (!theUser["emailVerified"]) {
     throw "Account has not been email verified.";
@@ -241,6 +242,7 @@ export async function registeredEvents(userId) {
 //Changes the password
 export async function newPassword(email, tempPassword, p1, p2) {
   let theUser = await checkPassword(email, tempPassword);
+  helpers.isValidPassword(p1)
   if (p1 !== p2) {
     throw "Passwords do not match.";
   }
