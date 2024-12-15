@@ -339,6 +339,27 @@ export async function unregisterFromEvent(eventId, userId) {
   }
 }
 
+export async function pastEvents(user) {
+  let theEvents = await getEventsByClass(user.class);
+  let activeEvents = []
+    const now = new Date();
+    for (const event of theEvents) {
+      const [year, month, day] = event.date.split('-');
+      const eventDate = new Date(year, month - 1, day);
+      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
+      if (eventDate < now) {
+        activeEvents.push(event);
+      } else if (eventDate.toDateString() === now.toDateString()) {
+        if (eventStartTime < now) {
+          activeEvents.push(event);
+        }
+      }
+    }
+    activeEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return activeEvents
+}
+
 //Returns a list of all events whose class matches theClass parameter.
 export async function getEventsByClass(theClass) {
   helpers.checkArgs(arguments, 1);

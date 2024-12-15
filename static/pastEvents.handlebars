@@ -9,7 +9,7 @@
     <ul>
       {{#each events}}
         <li>
-          <a href="/events/{{id}}"><h2>{{name}}</h2></a>
+          <a href="/events/{{_id}}"><h2>{{name}}</h2></a>
           <p><strong>Date:</strong> {{date}}</p>
           <p><strong>Start Time:</strong> {{starttime}}</p>
           <p><strong>End Time:</strong> {{endtime}}</p>
@@ -25,7 +25,7 @@
       <form action="/myaccount" method="POST">
         <button type="submit" class="footer-btn">My Account</button>
       </form>
-    </footer>
+    </footer>  
 
   </body>
 </html>
