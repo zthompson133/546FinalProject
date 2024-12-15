@@ -111,7 +111,11 @@ export function isValidClass(string, varName) {
   if (string !== "graduate" && string !== "undergraduate") {
     throw "Class must be graduate or undergraduate";
   }
-  return (string === "graduate");
+  if (string === 'graduate') {
+    return 'graduate'
+  } else {
+    return 'undergraduate'
+  }
 }
 
 export function isValidString(string, name) {

@@ -29,7 +29,7 @@
           <span class="event-time">{{event.starttime}}</span></p>
         <p><strong>End Time:</strong>
           <span class="event-time">{{event.endtime}}</span></p>
-        <p><strong>Class:</strong> {{event.Class}}</p>
+        <p><strong>Class:</strong> {{event.class}}</p>
         <p><strong>Attendees:</strong> {{event.numberOfAttendees}}</p>
       </div>
     </main>
@@ -48,13 +48,15 @@
         </button>
       {{else}}
         {{#if eligible}}
-          <button
-            type="button"
-            class="btn btn-primary"
-            onclick="window.location.href='/register/{{event._id}}'"
-          >
-            Register
-          </button>
+          {{#unless past}}
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="window.location.href='/register/{{event._id}}'"
+            >
+              Register
+            </button>
+          {{/unless}}
         {{else}}
           <button type="button" class="btn btn-disabled" disabled>
             You can't Register

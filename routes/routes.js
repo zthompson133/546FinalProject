@@ -51,7 +51,7 @@ router.route("/login").post(async (req, res) => {
 router.route("/createaccount").post(async (req, res) => {
   try {
     let theBody = req.body;
-    let signupClass = helpers.isValidClass(theBody.Class);
+    let signupClass = helpers.isValidClass(theBody.Class, 'class');
     let userObject = await userData.addUser(
       theBody.signup_first_name,
       theBody.signup_last_name,
@@ -327,13 +327,25 @@ router
           studentRegistered = true;
         }
       });
-
       const event = await eventData.getEventByID(req.params.id);
+      let past = true
+      const now = new Date();
+      const [year, month, day] = event.date.split('-');
+      const eventDate = new Date(year, month - 1, day);
+      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
+      if (eventDate > now) {
+        past = false
+      } else if (eventDate.toDateString() === now.toDateString()) {
+        if (eventStartTime > now) {
+          past = false
+        }
+      }
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
         studentRegistered,
-        eligible: user.class === event.Class,
+        eligible: user.class === event.class,
+        past: past
       });
     } catch (e) {
       console.log(e);
