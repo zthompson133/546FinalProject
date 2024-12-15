@@ -340,25 +340,32 @@ export async function unregisterFromEvent(eventId, userId) {
 }
 
 export async function pastEvents(user) {
-  let theEvents = await getEventsByClass(user.class);
-  let activeEvents = []
-    const now = new Date();
-    for (const event of theEvents) {
-      const [year, month, day] = event.date.split('-');
-      const eventDate = new Date(year, month - 1, day);
-      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
-      if (eventDate < now) {
-        activeEvents.push(event);
-      } else if (eventDate.toDateString() === now.toDateString()) {
-        if (eventStartTime < now) {
-          activeEvents.push(event);
-        }
-      }
-    }
-    activeEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const theEvents = await getEventsByClass(user.class);
+  const activeEvents = [];
+  const now = new Date();
 
-    return activeEvents
+  for (const event of theEvents) {
+    const [year, month, day] = event.date.split('-').map(Number);
+    const [startHour, startMinute] = event.starttime.split(':').map(Number);
+
+    const eventStartTime = new Date(year, month - 1, day, startHour, startMinute);
+
+    if (eventStartTime < now) {
+      activeEvents.push(event);
+    }
+  }
+
+  activeEvents.sort((a, b) => {
+    const [yearA, monthA, dayA] = a.date.split('-').map(Number);
+    const dateA = new Date(yearA, monthA - 1, dayA);
+    const [yearB, monthB, dayB] = b.date.split('-').map(Number);
+    const dateB = new Date(yearB, monthB - 1, dayB);
+    return dateB - dateA;
+  });
+
+  return activeEvents;
 }
+
 
 //Returns a list of all events whose class matches theClass parameter.
 export async function getEventsByClass(theClass) {
