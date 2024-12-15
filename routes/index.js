@@ -10,7 +10,6 @@ const constructorMethod = (app) => {
   app.use("/verifyemail", theRoute); //Checks account verification code, logs them in and sends them to homepage.
   app.use("/changepassword", theRoute); //Changes user's password, logs them in and sends then to homepage.
   app.use("/myprofile", theRoute); //Sends user to their profile page. (Not done yet)
-  app.use("/searchevents", theRoute); //Sends user to the search events page. (Not done yet)
   app.use("/createevent", theRoute); //Sends user to the create event page
   app.use("/events", theRoute);
   app.use("*", (req, res) => {

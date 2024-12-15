@@ -19,6 +19,9 @@ router.route("/signup").post(async (req, res) => {
 });
 router.route("/login").post(async (req, res) => {
   //activeUser = "zthompso@stevens.edu"; 
+  /*You can un-comment the line above and add your email if you don't want to log in every time you 
+  re-run your code. If this line is un-commented, the route will send you right to the homepage when
+  you press login. Just make sure to put the comment back before you commit the code to Github. */
   if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
@@ -196,15 +199,6 @@ router.route("/myprofile").post(async (req, res) => {
     class: theClass,
     verified: verified,
   });
-});
-router.route("/searchevents").post(async (req, res) => {
-  if(!activeUser) {
-    res.render(path.resolve("static/landingpage.handlebars"));
-    return;
-  }
-  let theUser = await userData.getUserByEmail(activeUser);
-  let theEvents = await eventData.getEventsByClass(theUser.class);
-  res.render(path.resolve("static/searchevents.handlebars"), {events: theEvents});
 });
 router
   .route("/createevent")

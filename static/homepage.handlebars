@@ -12,14 +12,8 @@ Page the user sees after they log in.
 <body>
    <h1>Stevens Event Planner Homepage</h1>
 
-    <form class = "ib_form" action = "/login" method = "POST">
-    <button type = "submit">Back to Homepage</button></form>
-
     <form class = "ib_form" action = "/myprofile" method = "POST">
     <button type = "submit">My Profile</button></form>
-
-    <form class = "ib_form" action = "/searchevents" method = "POST">
-    <button type = "submit">Search Events</button></form>
 
     <form class = "ib_form" action = "/myRegisteredEvents" method = "GET">
     <button type = "submit">My Registered Events</button></form>
@@ -28,30 +22,44 @@ Page the user sees after they log in.
     <button type = "submit">Create An Event</button></form> {{/if}}
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "GET">
     <button type = "submit">View All Created Events</button></form> {{/if}} </br>
-    <h2>All Upcoming Events</h2>
-  {{#if events.length}}
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Location</th>
-      </tr>
-    </thead>
-    <tbody>
+    <h2>Upcoming Events</h2>
+    <form id="eventSearchForm">
+    <label for="keyword">Search By Keyword</label>
+    <input id="keyword" type="text">
+    <button class = "buttoninput" type="submit">Search Events</button>
+    </form>
+
+    <span class = "errorcss" id = "noinput">Error: No search term inputted.</span>
+
+    <form id = "showall" class = "ib_form" action = "/login" method = "POST" hidden>
+    <button type = "submit">Show All Events</button></form></br>
+
+    {{#if events}}
+    <table id = "searchResults">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+    <tbody id = "resultrows">
       {{#each events}}
-      <tr>
-        <td><a href = "/events/{{this._id}}">{{this.name}}</a></td>
-        <td>{{this.date}}</td>
-        <td>{{this.starttime}}</td>
-        <td>{{this.location}}</td>
-      </tr>
+        <tr data-name = "{{this.name}}" data-description = "{{this.description}}">
+          <td><a href = "/events/{{this._id}}">{{this.name}}</a></td>
+          <td>{{this.date}}</td>
+          <td>{{this.starttime}}</td>
+          <td>{{this.location}}</td>
+        </tr>
       {{/each}}
     </tbody>
   </table>
+  <p id = "emptysearch" hidden>No upcoming events match your search.</p>
   {{else}}
-  <p>There are no upcoming events.</p>
+  <p id = "noevents">There are no upcoming events.</p>
   {{/if}}
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="../public/js/main.js"></script>
 </body>
 </html>
