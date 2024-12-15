@@ -51,7 +51,7 @@ router.route("/login").post(async (req, res) => {
 router.route("/createaccount").post(async (req, res) => {
   try {
     let theBody = req.body;
-    let signupClass = helpers.isValidClass(theBody.Class);
+    let signupClass = helpers.isValidClass(theBody.Class, 'class');
     let userObject = await userData.addUser(
       theBody.signup_first_name,
       theBody.signup_last_name,
@@ -344,7 +344,7 @@ router
         event: event,
         title: "Event Page",
         studentRegistered,
-        eligible: user.class === event.Class,
+        eligible: user.class === event.class,
         past: past
       });
     } catch (e) {
