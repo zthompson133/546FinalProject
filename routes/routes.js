@@ -532,6 +532,7 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
   try {
+    await eventData.moveRegisteredToAttended(userId.toString())
     const events = await userData.registeredEvents(userId.toString());
     if (!events) {
       throw new Error("No Events Found");
@@ -555,17 +556,23 @@ router.route("/pastEvents").get(async (req, res) => {
     return;
   }
   let theUser = await userData.getUserByEmail(activeUser);
+  let userId = theUser["_id"];
   try {
-    const events = await eventData.pastEvents(theUser);
-    if (!events) {
+    await eventData.moveRegisteredToAttended(userId.toString())
+    const attended = []
+    for (const event of theUser.attendedEvents) {
+      const eventFull = await eventData.getEventByID(event)
+      attended.push(eventFull)
+    }
+    if (!theUser.attendedEvents) {
       throw new Error("No Events Found");
     }
     console.log({
-      events: events,
+      events: attended,
       title: "Past Events",
     });
     return res.render(path.resolve("static/pastEvents.handlebars"), {
-      events: events,
+      events: attended,
       title: "Past Events",
     });
   } catch (e) {

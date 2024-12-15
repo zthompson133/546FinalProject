@@ -385,3 +385,50 @@ export async function getEventsByClass(theClass) {
   }
   return finalEvents;
 }
+
+export async function moveRegisteredToAttended(userId) {
+  const userCollection = await users();
+  let user = await usersData.getUserById(userId);
+
+  const past = await pastEvents(user);
+  const pastEventIds = []
+  for (const event of past) {
+    pastEventIds.push(event._id.toString())
+  }
+
+  const updatedRegistered = [];
+  const updatedAttended = [];
+  for (const event of user.attendedEvents) {
+    updatedAttended.push(event)
+  }
+
+  for (const eventId of user.registeredEvents) {
+    const event = await getEventByID(eventId);
+    if (pastEventIds.includes(event._id.toString())) {
+      updatedAttended.push(event._id.toString());
+    } else {
+      updatedRegistered.push(event._id.toString());
+    }
+  }
+
+  console.log("Updated Attended: " + updatedAttended)
+  console.log("Updated Registered: " + updatedRegistered)
+
+  user.registeredEvents = updatedRegistered;
+  user.attendedEvents = updatedAttended;
+
+  const updateUserInfo = await userCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $set: {
+        registeredEvents: user.registeredEvents,
+        attendedEvents: user.attendedEvents
+      }
+    }
+  );
+
+  console.log(updateUserInfo)
+
+  return updateUserInfo;
+}
+

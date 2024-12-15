@@ -36,16 +36,18 @@
 
     <section class="action-buttons">
       {{#if studentRegistered}}
-        <button type="button" class="btn btn-disabled" disabled>
-          You are Already Registered
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="window.location.href='/unregister/{{event._id}}'"
-        >
-          Unregister
-        </button>
+        {{#unless past}}
+          <button type="button" class="btn btn-disabled" disabled>
+            You are Already Registered
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="window.location.href='/unregister/{{event._id}}'"
+          >
+            Unregister
+          </button>
+        {{/unless}}
       {{else}}
         {{#if eligible}}
           {{#unless past}}
