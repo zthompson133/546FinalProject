@@ -24,6 +24,9 @@ Page the user sees after they log in.
     <form class = "ib_form" action = "/myRegisteredEvents" method = "GET">
     <button type = "submit">My registered events</button></form>
 
+    <form class = "ib_form" action = "/pastEvents" method = "GET">
+    <button type = "submit">Past events</button></form>
+
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "POST">
     <button type = "submit">Create An Event</button></form> {{/if}}
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "GET">

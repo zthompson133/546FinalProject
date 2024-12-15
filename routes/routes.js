@@ -22,10 +22,24 @@ router.route("/login").post(async (req, res) => {
   if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
-    theEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    let activeEvents = []
+    const now = new Date();
+    for (const event of theEvents) {
+      const [year, month, day] = event.date.split('-');
+      const eventDate = new Date(year, month - 1, day);
+      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
+      if (eventDate > now) {
+        activeEvents.push(event);
+      } else if (eventDate.toDateString() === now.toDateString()) {
+        if (eventStartTime > now) {
+          activeEvents.push(event);
+        }
+      }
+    }
+    activeEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     res.render(path.resolve("static/homepage.handlebars"), {
       user: theUser,
-      events: theEvents,
+      events: activeEvents,
     });
   } else {
     res.render(path.resolve("static/login.handlebars"));
@@ -510,6 +524,30 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
     return res.render(path.resolve("static/myRegisteredEvents.handlebars"), {
       events: events,
       title: "My Registered Events",
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(404).json({ error: e });
+  }
+});
+router.route("/pastEvents").get(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
+  }
+  let theUser = await userData.getUserByEmail(activeUser);
+  try {
+    const events = await eventData.pastEvents(theUser)
+    if (!events) {
+      throw new Error("No Events Found");
+    }
+    console.log({
+      events: events,
+      title: "Past Events",
+    });
+    return res.render(path.resolve("static/pastEvents.handlebars"), {
+      events: events,
+      title: "Past Events",
     });
   } catch (e) {
     console.log(e);
