@@ -156,8 +156,10 @@ export async function sendEmail(email, field, text) {
       html: "<b>Your " + text + " is " + code + "</b>",
     });
   } catch (e) {
-    throw "If you are reading this, you probably need to add the .env file to the root directory. I DM'ed \
-      it to everyone on Slack.\n Full error details:" + e;
+    throw (
+      "If you are reading this, you probably need to add the .env file to the root directory. I DM'ed \
+      it to everyone on Slack.\n Full error details:" + e
+    );
   }
   const finalUser = await changeField(
     email,

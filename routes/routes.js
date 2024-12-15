@@ -18,17 +18,17 @@ router.route("/signup").post(async (req, res) => {
   res.render(path.resolve("static/signup.handlebars"));
 });
 router.route("/login").post(async (req, res) => {
-  //activeUser = "zthompso@stevens.edu"; 
+  //activeUser = "zthompso@stevens.edu";
   /*You can un-comment the line above and add your email if you don't want to log in every time you 
   re-run your code. If this line is un-commented, the route will send you right to the homepage when
   you press login. Just make sure to put the comment back before you commit the code to Github. */
   if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
-    let activeEvents = []
+    let activeEvents = [];
     const now = new Date();
     for (const event of theEvents) {
-      const [year, month, day] = event.date.split('-');
+      const [year, month, day] = event.date.split("-");
       const eventDate = new Date(year, month - 1, day);
       const eventStartTime = new Date(`${event.date}T${event.starttime}`);
       if (eventDate > now) {
@@ -51,7 +51,7 @@ router.route("/login").post(async (req, res) => {
 router.route("/createaccount").post(async (req, res) => {
   try {
     let theBody = req.body;
-    let signupClass = helpers.isValidClass(theBody.Class, 'class');
+    let signupClass = helpers.isValidClass(theBody.Class, "class");
     let userObject = await userData.addUser(
       theBody.signup_first_name,
       theBody.signup_last_name,
@@ -139,10 +139,10 @@ router.route("/checkpassword").post(async (req, res) => {
     activeUser = theUser["email"];
     //let finalUser = await userData.changeField(activeUser, "verified", true);
     let theEvents = await eventData.getEventsByClass(theUser.class);
-    let activeEvents = []
+    let activeEvents = [];
     const now = new Date();
     for (const event of theEvents) {
-      const [year, month, day] = event.date.split('-');
+      const [year, month, day] = event.date.split("-");
       const eventDate = new Date(year, month - 1, day);
       const eventStartTime = new Date(`${event.date}T${event.starttime}`);
       if (eventDate > now) {
@@ -217,17 +217,19 @@ router.route("/myprofile").post(async (req, res) => {
 router
   .route("/createevent")
   .get(async (req, res) => {
-    if(!activeUser) {
+    if (!activeUser) {
       res.render(path.resolve("static/landingpage.handlebars"));
       return;
     }
-    const user = await userData.getUserByEmail(activeUser)
-    let events = []
+    const user = await userData.getUserByEmail(activeUser);
+    let events = [];
     for (const event of user.createdEvents) {
-      events.push(await eventData.getEventByID(event))
+      events.push(await eventData.getEventByID(event));
     }
     events.sort((a, b) => new Date(a.date) - new Date(b.date));
-    res.render(path.resolve("static/myCreatedEvents.handlebars"), {events: events});
+    res.render(path.resolve("static/myCreatedEvents.handlebars"), {
+      events: events,
+    });
   })
   .post(async (req, res) => {
     console.log(req.body);
@@ -252,7 +254,7 @@ router
     //create a new event after validating inputs
     const theBody = req.body;
     //make sure there is something present in the req.body
-    
+
     if (!eventData || Object.keys(eventData).length === 0) {
       return res
         .status(400)
@@ -295,10 +297,12 @@ router
       let theUser = await userData.getUserByEmail(activeUser);
       let events = [];
       for (const event of theUser.createdEvents) {
-        events.push(await eventData.getEventByID(event))
+        events.push(await eventData.getEventByID(event));
       }
       events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      res.render(path.resolve("static/myCreatedEvents.handlebars"), { events: events});
+      res.render(path.resolve("static/myCreatedEvents.handlebars"), {
+        events: events,
+      });
     } catch (e) {
       return res.status(400).json({ error: e });
     }
@@ -312,7 +316,7 @@ router
       return;
     }
     try {
-      console.log(req.params.id)
+      console.log(req.params.id);
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
@@ -328,16 +332,16 @@ router
         }
       });
       const event = await eventData.getEventByID(req.params.id);
-      let past = true
+      let past = true;
       const now = new Date();
-      const [year, month, day] = event.date.split('-');
+      const [year, month, day] = event.date.split("-");
       const eventDate = new Date(year, month - 1, day);
       const eventStartTime = new Date(`${event.date}T${event.starttime}`);
       if (eventDate > now) {
-        past = false
+        past = false;
       } else if (eventDate.toDateString() === now.toDateString()) {
         if (eventStartTime > now) {
-          past = false
+          past = false;
         }
       }
       return res.render(path.resolve("static/eventpage.handlebars"), {
@@ -345,7 +349,7 @@ router
         title: "Event Page",
         studentRegistered,
         eligible: user.class === event.class,
-        past: past
+        past: past,
       });
     } catch (e) {
       console.log(e);
@@ -396,7 +400,7 @@ router
   })
   .patch(async (req, res) => {
     //update specific fields of an event (partially update)
-    if(!activeUser) {
+    if (!activeUser) {
       res.render(path.resolve("static/landingpage.handlebars"));
       return;
     }
@@ -475,7 +479,10 @@ router.route("/register/:id").get(async (req, res) => {
     if (!event) {
       throw new Error("No Event exists with that ID");
     }
-    const register = await eventData.registerForEvent(event._id, userId.toString());
+    const register = await eventData.registerForEvent(
+      event._id,
+      userId.toString()
+    );
     if (register) {
       return res.redirect("/events/" + req.params.id);
     } else {
@@ -505,7 +512,7 @@ router.route("/unregister/:id").get(async (req, res) => {
     }
     const unregister = await eventData.unregisterFromEvent(
       req.params.id,
-      userId
+      userId.toString()
     );
     if (unregister) {
       return res.redirect("/events/" + req.params.id);
@@ -549,7 +556,7 @@ router.route("/pastEvents").get(async (req, res) => {
   }
   let theUser = await userData.getUserByEmail(activeUser);
   try {
-    const events = await eventData.pastEvents(theUser)
+    const events = await eventData.pastEvents(theUser);
     if (!events) {
       throw new Error("No Events Found");
     }
@@ -566,6 +573,5 @@ router.route("/pastEvents").get(async (req, res) => {
     return res.status(404).json({ error: e });
   }
 });
-
 
 export default router;
