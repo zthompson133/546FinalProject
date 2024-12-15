@@ -1,5 +1,4 @@
 import e, { Router } from "express";
-import * as main from "../public/js/main.js";
 import path from "path";
 import * as userData from "../data/users.js";
 import * as eventData from "../data/events.js";
@@ -19,6 +18,7 @@ router.route("/signup").post(async (req, res) => {
   res.render(path.resolve("static/signup.handlebars"));
 });
 router.route("/login").post(async (req, res) => {
+  //activeUser = "zthompso@stevens.edu"; 
   if (activeUser) {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
@@ -198,7 +198,13 @@ router.route("/myprofile").post(async (req, res) => {
   });
 });
 router.route("/searchevents").post(async (req, res) => {
-  //Not done yet
+  if(!activeUser) {
+    res.render(path.resolve("static/landingpage.handlebars"));
+    return;
+  }
+  let theUser = await userData.getUserByEmail(activeUser);
+  let theEvents = await eventData.getEventsByClass(theUser.class);
+  res.render(path.resolve("static/searchevents.handlebars"), {events: theEvents});
 });
 router
   .route("/createevent")
@@ -516,5 +522,6 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
     return res.status(404).json({ error: e });
   }
 });
+
 
 export default router;
