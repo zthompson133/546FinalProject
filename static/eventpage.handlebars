@@ -11,7 +11,7 @@
     </header>
 
     <main class="event-details">
-      <div class="event-poster-container"><!--"{{event.poster}}"-->
+      <div class="event-poster-container">
         <img
           src="../public/imgs/EventPage.jpg"
           alt="{{event.name}} Poster"
@@ -23,12 +23,10 @@
         <p><strong>Description:</strong> {{event.description}}</p>
         <p><strong>Location:</strong> {{event.location}}</p>
         <p><strong>Organizer:</strong> {{event.organizer}}</p>
-        <p><strong>Rating:</strong> {{event.rating}}</p>
+        <p><strong>Organizer Rating:</strong> {{event.rating}}/5</p>
         <p><strong>Date:</strong> {{event.date}}</p>
-        <p><strong>Start Time:</strong>
-          <span class="event-time">{{event.starttime}}</span></p>
-        <p><strong>End Time:</strong>
-          <span class="event-time">{{event.endtime}}</span></p>
+        <p><strong>Start Time:</strong> <span class="event-time">{{event.starttime}}</span></p>
+        <p><strong>End Time:</strong> <span class="event-time">{{event.endtime}}</span></p>
         <p><strong>Class:</strong> {{event.class}}</p>
         <p><strong>Attendees:</strong> {{event.numberOfAttendees}}</p>
       </div>
@@ -59,10 +57,42 @@
               Register
             </button>
           {{/unless}}
-        {{else}}
-          <button type="button" class="btn btn-disabled" disabled>
-            You can't Register
-          </button>
+          {{#if past}}
+            {{#if givenFeedback}}
+              <h1>Your Submitted Feedback</h1>
+              <p><strong>Rating:</strong> {{feedback.rating}}/5</p>
+              <p><strong>Comment:</strong> {{feedback.comment}}</p>
+            {{else}}
+              <h1>Feedback Page</h1>
+              <form action="/eventend" method="POST">
+                <input type="hidden" name="eventId" value="{{event._id}}">
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                  <option value="0.5">0.5</option>
+                  <option value="1.0">1.0</option>
+                  <option value="1.5">1.5</option>
+                  <option value="2.0">2.0</option>
+                  <option value="2.5">2.5</option>
+                  <option value="3.0">3.0</option>
+                  <option value="3.5">3.5</option>
+                  <option value="4.0">4.0</option>
+                  <option value="4.5">4.5</option>
+                  <option value="5.0">5.0</option>
+                </select>
+                <br><br>
+
+                <label for="comment">Comment:</label>
+                <input type="text" id="comment" name="comment" required>
+                <br><br>
+
+                <button type="submit">Submit Feedback</button>
+              </form>
+            {{/if}}
+          {{else}}
+            <button type="button" class="btn btn-disabled" disabled>
+              You can't Register
+            </button>
+          {{/if}}
         {{/if}}
       {{/if}}
     </section>
@@ -76,5 +106,4 @@
       </form>
     </footer>
   </body>
-
 </html>

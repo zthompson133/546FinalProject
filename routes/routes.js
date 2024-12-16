@@ -2,8 +2,10 @@ import e, { Router } from "express";
 import path from "path";
 import * as userData from "../data/users.js";
 import * as eventData from "../data/events.js";
+import * as feedbackData from "../data/feedback.js"
 import * as helpers from "../data/helpers.js";
 import { runInNewContext } from "vm";
+import GetIntrinsic from "get-intrinsic";
 
 let activeUser = false;
 /*
@@ -232,7 +234,6 @@ router
     });
   })
   .post(async (req, res) => {
-    console.log(req.body);
     res.render(path.resolve("static/create.handlebars"));
   });
 router
@@ -316,7 +317,6 @@ router
       return;
     }
     try {
-      console.log(req.params.id);
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
@@ -344,12 +344,24 @@ router
           past = false;
         }
       }
+      let givenFeedback = false
+      let feedbacks
+      if (past) {
+        for (const feedback of event.feedback) {
+          if (feedback.userId.toString() === userId.toString()) {
+            givenFeedback = true
+            feedbacks = await feedbackData.getFeedback(feedback._id.toString())
+          }
+        }
+      }
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
         studentRegistered,
         eligible: user.class === event.class,
         past: past,
+        givenFeedback: givenFeedback,
+        feedback: feedbacks
       });
     } catch (e) {
       console.log(e);
@@ -537,10 +549,6 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
     if (!events) {
       throw new Error("No Events Found");
     }
-    console.log({
-      events: events,
-      title: "My Registered Events",
-    });
     return res.render(path.resolve("static/myRegisteredEvents.handlebars"), {
       events: events,
       title: "My Registered Events",
@@ -559,7 +567,7 @@ router.route("/pastEvents").get(async (req, res) => {
   let userId = theUser["_id"];
   try {
     await eventData.moveRegisteredToAttended(userId.toString())
-    const attended = []
+    let attended = []
     for (const event of theUser.attendedEvents) {
       const eventFull = await eventData.getEventByID(event)
       attended.push(eventFull)
@@ -567,10 +575,6 @@ router.route("/pastEvents").get(async (req, res) => {
     if (!theUser.attendedEvents) {
       throw new Error("No Events Found");
     }
-    console.log({
-      events: attended,
-      title: "Past Events",
-    });
     return res.render(path.resolve("static/pastEvents.handlebars"), {
       events: attended,
       title: "Past Events",
@@ -580,5 +584,111 @@ router.route("/pastEvents").get(async (req, res) => {
     return res.status(404).json({ error: e });
   }
 });
+router
+  .route("/eventend")
+  .get(async (req, res) => {
+    if (!activeUser) {
+      res.render(path.resolve("static/landingpage.handlebars"));
+      return;
+    }
+  
+    try {
+      req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+  
+    try {
+      let user = await userData.getUserByEmail(activeUser);
+      console.log(user)
+      let userId = user["_id"].toString();
+      let studentRegistered = user.registeredEvents.includes(req.params.id);
+      
+      const event = await eventData.getEventByID(req.params.id);
+      console.log(event)
+      
+      let past = true;
+      const now = new Date();
+      const [year, month, day] = event.date.split("-");
+      const eventDate = new Date(year, month - 1, day);
+      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
+  
+      if (eventDate > now || (eventDate.toDateString() === now.toDateString() && eventStartTime > now)) {
+        past = false;
+      }
+  
+      let givenFeedback = false;
+      let userFeedback = null;
+  
+      if (past) {
+        for (const feedback of event.feedback) {
+          console.log('here2')
+          if (feedback.userId.toString() === userId.toString()) {
+            console.log('here2')
+            givenFeedback = true;
+            userFeedback = feedback;
+            break;
+          }
+        }
+      }
+  
+      return res.render(path.resolve("static/eventpage.handlebars"), {
+        event: event,
+        title: "Event Page",
+        studentRegistered: studentRegistered,
+        eligible: user.class === event.class,
+        past: past,
+        givenFeedback: givenFeedback,
+        userFeedback: userFeedback
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(404).json({ error: e });
+    }
+  })
+  .post(async (req, res) => {
+    const theBody = req.body;
+
+    if (!theBody || Object.keys(theBody).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "There are no fields in the request body" });
+    }
+
+    try {
+      const { eventId, rating, comment } = theBody;
+
+      if (!eventId) {
+        throw "No event ID provided.";
+      }
+
+      if (!rating) {
+        throw "No rating provided.";
+      }
+
+      if (!comment) {
+        throw "No comment provided.";
+      }
+
+      const validRatings = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0];
+      const parsedRating = parseFloat(rating);
+      if (!validRatings.includes(parsedRating)) {
+        throw "Invalid rating value.";
+      }
+
+      const validatedComment = helpers.checkString(comment, "comment");
+
+      const user = await userData.getUserByEmail(activeUser);
+      if (!user) {
+        throw "User not found or not logged in.";
+      }
+
+      await feedbackData.createFeedback(user._id.toString(), eventId, parsedRating, validatedComment);
+
+      res.redirect(`/events/${eventId}`);
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+  })
 
 export default router;
