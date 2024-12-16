@@ -332,6 +332,17 @@ router
         }
       });
       const event = await eventData.getEventByID(req.params.id);
+      let creator = false
+      if (activeUser === event.organizer) {
+        creator = true
+      }
+      
+      let allFeedback = []
+      if (creator) {
+        for (const feedback of event.feedback) {
+          allFeedback.push(feedback)
+        }
+      }
       let past = true;
       const now = new Date();
       const [year, month, day] = event.date.split("-");
@@ -348,9 +359,10 @@ router
       let feedbacks
       if (past) {
         for (const feedback of event.feedback) {
-          if (feedback.userId.toString() === userId.toString()) {
+          const backReadable = JSON.parse(JSON.stringify(feedback, null));
+          if (backReadable.userId.toString() === userId.toString()) {
             givenFeedback = true
-            feedbacks = await feedbackData.getFeedback(feedback._id.toString())
+            feedbacks = backReadable
           }
         }
       }
@@ -361,7 +373,9 @@ router
         eligible: user.class === event.class,
         past: past,
         givenFeedback: givenFeedback,
-        feedback: feedbacks
+        feedback: feedbacks,
+        creator: creator,
+        allFeedback: allFeedback
       });
     } catch (e) {
       console.log(e);
