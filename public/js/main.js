@@ -42,6 +42,7 @@
   })(window.jQuery);
 
 //client side validation
+
 document.addEventListener("DOMContentLoaded", () => {
     // Landing Page
     const landingPageSignupForm = document.querySelector("form[action='/signup']");
@@ -304,19 +305,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
   
-    //helper function to show error messages
-    function showError(message) {
+    //helper function to show error messages below fields
+    function showError(inputField, message) {
         const errorDiv = document.createElement("div");
-        errorDiv.classList.add("error");
-        errorDiv.style.color = "red";
-        errorDiv.innerText = message;
-        const form = document.querySelector("form");
-        form.prepend(errorDiv);
+        errorDiv.classList.add("errorcss");
+        errorDiv.textContent = message;
+
+        //prevent duplicate errors
+        clearErrorForField(inputField);
+
+        //insert error after the input field
+        inputField.parentNode.insertBefore(errorDiv, inputField.nextSibling);
     }
 
     //helper Function to Clear Errors
     function clearErrors(form) {
-        const errorMessages = form.querySelectorAll(".error");
+        const errorMessages = form.querySelectorAll(".errorcss");
         errorMessages.forEach((message) => message.remove());
+    }
+
+    //clear error for specific input field
+    function clearErrorForField(inputField) {
+        const nextSibling = inputField.nextSibling;
+        if (nextSibling && nextSibling.classList && nextSibling.classList.contains("errorcss")) {
+            nextSibling.remove();
+        }
     }
 });
