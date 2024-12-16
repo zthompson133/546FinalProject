@@ -51,22 +51,18 @@ export async function createFeedback(userId, eventId, rating, comment) {
     );
 
     let eventUser = await getUserByEmail(event.organizer)
-    console.log(eventUser)
 
     let newRating = 0
     let newLength = 0
     for (const events of eventUser.createdEvents) {
         const thisEvent = await getEventByID(events)
-        console.log(thisEvent)
         newLength += thisEvent.feedback.length
         for (const feedbacks of thisEvent.feedback) {
             const thisFeedback = await getFeedback(feedbacks._id.toString())
-            console.log(thisFeedback)
             newRating += thisFeedback.rating
         }
     }
     let update = newRating/newLength
-    console.log(update)
 
     const eventUserUpdate = await userCollection.updateOne(
         { _id: new ObjectId(eventUser._id.toString()) },

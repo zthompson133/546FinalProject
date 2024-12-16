@@ -226,7 +226,6 @@ export async function registeredEvents(userId) {
     const event = await eventsCollection.findOne({
       _id: new ObjectId(eventId),
     });
-    console.log(event);
     const eventDetail = {
       id: event._id.toString(),
       name: event.name,
@@ -237,7 +236,6 @@ export async function registeredEvents(userId) {
     };
     eventDetailList.push(eventDetail);
   }
-  console.log(eventDetailList);
   return eventDetailList;
 }
 
