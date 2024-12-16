@@ -25,17 +25,18 @@ Page the user sees after they log in.
     <button type = "submit">Create An Event</button></form> {{/if}}
     {{#if user.verified}} <form class = "ib_form" action = "/createevent" method = "GET">
     <button type = "submit">View All Created Events</button></form> {{/if}} </br> </br>
-    <form id="eventSearchForm">
+    <form class = "ib_form" id="eventSearchForm">
     <label for="keyword">Search By Keyword</label>
     <input id="keyword" type="text">
-    <button class = "buttoninput" type="submit">Search Events</button>
+    <button class = "buttoninput" type="submit">Search Events</button></form>
+    <form id = "showall" class = "ib_form" action = "/login" method = "POST" hidden>
+    <button type = "submit">Show All Events</button></form></br>
     <h2>Upcoming Events</h2>
-    </form>
+    
 
     <span class = "errorcss" id = "noinput">Error: No search term inputted.</span>
 
-    <form id = "showall" class = "ib_form" action = "/login" method = "POST" hidden>
-    <button type = "submit">Show All Events</button></form></br>
+
 
     {{#if events}}
     <table id = "searchResults">
