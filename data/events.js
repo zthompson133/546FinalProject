@@ -32,6 +32,10 @@ export async function addEvent(
   attendees,
   numberOfAttendees
 ) {
+  const user = await usersData.getUserByEmail(organizer);
+  if (!user) {
+    throw new Error("No Organizer with give mail found.");
+  }
   name = helpers.isValidString(name, "name");
   description = helpers.isValidString(description, "description");
   helpers.checkValidDate(date, "Date");
@@ -45,7 +49,7 @@ export async function addEvent(
     Poster = "default";
   }
   feedback = [];
-  rating = 0;
+  rating = user.rating;
   attendees = [];
   numberOfAttendees = 0;
   let newEvent = {
@@ -63,10 +67,6 @@ export async function addEvent(
     attendees: attendees,
     numberOfAttendees: numberOfAttendees,
   };
-  const user = await usersData.getUserByEmail(organizer);
-  if (!user) {
-    throw new Error("No Organizer with give mail found.");
-  }
   const eventsCollection = await events();
   const insertInfo = await eventsCollection.insertOne(newEvent);
   if (!insertInfo.acknowledged || !insertInfo.insertedId) {
@@ -207,7 +207,6 @@ export async function registerForEvent(eventId, userId) {
     if (updateUserInfo) {
       console.log("user updated");
 
-      console.log(updateEventInfo);
       if (updateUserInfo && updateEventInfo) {
         const info = await transporter.sendMail({
           from: '"EventPlanner" <eventplanner363@gmail.com>',
@@ -411,9 +410,6 @@ export async function moveRegisteredToAttended(userId) {
     }
   }
 
-  console.log("Updated Attended: " + updatedAttended)
-  console.log("Updated Registered: " + updatedRegistered)
-
   user.registeredEvents = updatedRegistered;
   user.attendedEvents = updatedAttended;
 
@@ -426,8 +422,6 @@ export async function moveRegisteredToAttended(userId) {
       }
     }
   );
-
-  console.log(updateUserInfo)
 
   return updateUserInfo;
 }

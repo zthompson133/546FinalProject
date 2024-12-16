@@ -2,11 +2,11 @@ import {users} from '../config/mongoCollections.js';
 import {events} from '../config/mongoCollections.js';
 import {ObjectId} from "mongodb";
 import { getEventByID } from './events.js';
-import { getUserByID } from './users.js';
+import { getUserById, getUserByEmail } from './users.js';
 import * as helpers from "./helpers.js";
 
 export async function createFeedback(userId, eventId, rating, comment) {
-    const user = await getUserByID(userId)
+    const user = await getUserById(userId)
     const event = await getEventByID(eventId)
 
     if (!user) {
@@ -22,7 +22,7 @@ export async function createFeedback(userId, eventId, rating, comment) {
         throw "Not a valid rating";
     }
 
-    const comment = helpers.checkString(comment, 'comment')
+    comment = helpers.checkString(comment, 'comment')
 
     const newFeedback = {
         _id: new ObjectId(),
@@ -37,8 +37,8 @@ export async function createFeedback(userId, eventId, rating, comment) {
     const eventCollection = await events();
 
     const userUpdate = await userCollection.updateOne(
-        { _id: user._id },
-        { $push: { feedback: newFeedback } }
+        { _id: new ObjectId(userId) },
+        { $push: { createdFeedback: newFeedback } }
     );
 
     if (userUpdate.matchedCount === 0) {
@@ -46,12 +46,51 @@ export async function createFeedback(userId, eventId, rating, comment) {
     }
 
     const eventUpdate = await eventCollection.updateOne(
-        { _id: event._id },
+        { _id: new ObjectId(eventId) },
         { $push: { feedback: newFeedback } }
     );
 
+    let eventUser = await getUserByEmail(event.organizer)
+    console.log(eventUser)
+
+    let newRating = 0
+    let newLength = 0
+    for (const events of eventUser.createdEvents) {
+        const thisEvent = await getEventByID(events)
+        console.log(thisEvent)
+        newLength += thisEvent.feedback.length
+        for (const feedbacks of thisEvent.feedback) {
+            const thisFeedback = await getFeedback(feedbacks._id.toString())
+            console.log(thisFeedback)
+            newRating += thisFeedback.rating
+        }
+    }
+    let update = newRating/newLength
+    console.log(update)
+
+    const eventUserUpdate = await userCollection.updateOne(
+        { _id: new ObjectId(eventUser._id.toString()) },
+        { $set: { rating: update } }
+    );
+
+    for (const createdEventId of eventUser.createdEvents) {
+        const eventRatingUpdate = await eventCollection.updateOne(
+            { _id: new ObjectId(createdEventId.toString()) },
+            { $set: { rating: update } }
+        );
+
+        if (eventRatingUpdate.matchedCount === 0) {
+            throw `Could not update rating for event with ID ${createdEventId}`;
+        }
+    }
+
+
     if (eventUpdate.matchedCount === 0) {
         throw `Could not add feedback to event with ID ${eventId}`;
+    }
+
+    if (eventUserUpdate.matchedCount === 0) {
+        throw `Could not add feedback to event with ID ${eventUser._id.toString()}`;
     }
 
     return await getEventByID(eventId);
@@ -92,7 +131,7 @@ export async function updateFeedback(feedbackId, updateObject) {
     let feedback = await getFeedback(feedbackId)
 
     for (const users of userList) {
-        for (const feedback of users.feedback) {
+        for (const feedback of users.createFeedback) {
             if (feedback._id.toString() === feedbackId) {
                 userId = users._id
             }
@@ -107,7 +146,7 @@ export async function updateFeedback(feedbackId, updateObject) {
         }
     }
     
-    const user = await getUserByID(userId.toString());
+    const user = await getUserById(userId.toString());
     const updatedFeedbackData = { ...feedback };
 
     const event = await getEventByID(eventId.toString());
@@ -173,7 +212,7 @@ export async function updateFeedback(feedbackId, updateObject) {
     return updatedEvent;
 };
 
-export const removeGame = async (feedbackId) => {
+export async function removeFeedback (feedbackId) {
     feedbackId = helpers.checkString(feedbackId, 'feedbackId')
     if (!ObjectId.isValid(feedbackId)) {
     throw 'invalid object ID'
@@ -204,7 +243,7 @@ export const removeGame = async (feedbackId) => {
         }
     }
 
-    const user = await getUserByID(userId.toString());
+    const user = await getUserById(userId.toString());
     const event = await getEventByID(eventId.toString());
 
     let updatedUserFeedbackArray = [];
