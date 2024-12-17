@@ -596,17 +596,13 @@ router.route("/pastEvents").get(async (req, res) => {
   let userId = theUser["_id"];
   try {
     await eventData.moveRegisteredToAttended(userId.toString());
-    let attended = [];
-    for (const event of theUser.attendedEvents) {
-      const eventFull = await eventData.getEventByID(event);
-      attended.push(eventFull);
-    }
-    if (!theUser.attendedEvents) {
+    const events = await userData.attendedEvents(userId.toString());
+    if (!events) {
       throw new Error("No Events Found");
     }
-    return res.render(path.resolve("static/pastEvents.handlebars"), {
-      events: attended,
-      title: "Past Events",
+    return res.render(path.resolve("static/myRegisteredEvents.handlebars"), {
+      events: events,
+      title: "My Registered Events",
     });
   } catch (e) {
     console.log(e);

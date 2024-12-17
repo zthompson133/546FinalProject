@@ -239,6 +239,36 @@ export async function registeredEvents(userId) {
   return eventDetailList;
 }
 
+export async function attendedEvents(userId) {
+  helpers.checkArgs(arguments, 1);
+  userId = helpers.checkString(userId, "userID");
+  helpers.checkId(userId, "userId");
+
+  const usersCollection = await users();
+  const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+  if (!user) {
+    throw new Error("No User with that Id Found");
+  }
+  const eventsCollection = await events();
+  const eventDetailList = [];
+
+  for (const eventId of user.attendedEvents) {
+    const event = await eventsCollection.findOne({
+      _id: new ObjectId(eventId),
+    });
+    const eventDetail = {
+      id: event._id.toString(),
+      name: event.name,
+      date: event.date,
+      starttime: event.starttime,
+      endtime: event.endtime,
+      location: event.location,
+    };
+    eventDetailList.push(eventDetail);
+  }
+  return eventDetailList;
+}
+
 //Changes the password
 export async function newPassword(email, tempPassword, p1, p2) {
   let theUser = await checkPassword(email, tempPassword);

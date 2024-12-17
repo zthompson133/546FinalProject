@@ -76,7 +76,8 @@
                 <p><strong>Rating:</strong> {{feedback.rating}}/5</p>
                 <p><strong>Comment:</strong> {{feedback.comment}}</p>
               {{else}}
-                <h1>Feedback Page</h1>
+                <h1 style="color: red;">Caution! Feedback cannot be edited or deleted!</h1>
+                <h2>Feedback Form</h2>
                 <form action="/eventend" method="POST">
                   <input type="hidden" name="eventId" value="{{event._id}}" />
                   <label for="rating">Rating:</label>
