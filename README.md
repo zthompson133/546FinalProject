@@ -1,9 +1,15 @@
 # 546FinalProject
-Events should now be sorted chronologically. Event dates and times aren't displayed in a way that's super 
-readable. (Dates are "2024-02-16", etc and times are in 24-hour time). The routing and handlebars for event search and editing events are the main things not done yet. 
 
-Student:
-Sign up to the event planner using your stevens email, verify email, login with the same credentials, and then search for desired event.
+1. Sign up three seperate times with any email that ends in @stevens.edu and skip verification step just go back and make users (valid emails not required if using mongo compass if there is a valid user a email will be sent with a code to verify). Set the emailVerified field to true for all three in mongo compass as well as the verified field to true for any user this will be the user who can create events.
 
-Verified User:
-Sign up, make your account field true on mongo compass, login, create an event with all necessary information.
+2. Sign in with the verified user and you will see a tab for create an event. Create an event folling the valid constraints. You will be able to see this event on the homepage in upcoming events as well as in the created Events Page. This link can be found in the handlevars. You can view all the created events on this page and click on a single event to see everything you inputed as well as feedback that users can submit once it starts. Recommended is to create an event that starts in the next 5-10 minutes so you can sign up with other users as well as test.
+
+3. Click log out in the top and you will be taken to the login page page where you can login in as one of the unverified (not allowed to create events) users. You will have less options like not being able to see created events and create events. You can still see upcoming events, and you can seach an event by a word in the name and press search to filter based on that. Click on the event you created with the verified account and hit register you will now see attendees go up by 1. You can navigate to the my registered events tab and you can see the event there. (Recommend doing this quick so you can sign in with the second user and register since you are not able to register once the event starts.)
+
+4. Follow the same log out route as before and sign in with the other unverified user and register like before. Now just wait until the start time of the event. Once the event starts navigate back to the hompepage and the event is no longer in the upcoming events. Then click on registered and the event is no longer there. Navigate to the attended events tab and click it and you will now see the event there. Click on the event and you will no longer be ablt to see an unregister button. Rather, you will see a feedback form where you can rate the event and leave a comment. Fill in the info click submit. Now you will see your feedback there and ypu will see that the organizer rating has changed due to that number.
+
+5. Log out of that account and sign in with the other unverified account. Follow the same steps to submit feedback with this user. You will now see that the rating has changed once again. The rating is the average of all of the user's feebacks ratings rounded to the nearest decimal. This rating will show up on any new created event so the users know if that organizer does good events or not.
+
+6. Log out again and sign in with the verified user once again. Click on the View All Created Events tab and click on the event. You will see all of the info as well as all of the feedback that was recieved by users on that specific event.
+
+7. Have fun and try out anything else our wonderful app provides.
