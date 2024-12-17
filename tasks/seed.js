@@ -38,11 +38,11 @@ const userUpdate3 = await userCollection.updateOne(
 const vid = user.getUserById(user3._id.toString());
 
 const firstEvent = await event.addEvent(
-  'Arts and Crafts', 'Join us for crafting and free food', '2024-22-12', '6:00', '8:00', 'Babbio 104', midEmail, 'undergraduate'
+  'Arts and Crafts', 'Join us for crafting and free food', '2024-12-22', '6:00', '8:00', 'Babbio 104', midEmail, 'undergraduate'
 );
 
 const secondEvent = await event.addEvent(
-  'Movie Night', 'Join us for a movie and free food', '2024-20-12', '17:00', '19:00', 'McLean 104', midEmail, 'graduate',
+  'Movie Night', 'Join us for a movie and free food', '2024-12-20', '17:00', '19:00', 'McLean 104', midEmail, 'graduate',
 );
 
 console.log('Done seeding database');
