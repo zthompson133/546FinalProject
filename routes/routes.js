@@ -20,7 +20,7 @@ router.route("/signup").post(async (req, res) => {
   res.render(path.resolve("static/signup.handlebars"));
 });
 router.route("/login").post(async (req, res) => {
-  activeUser = "zthompso@stevens.edu";
+  //activeUser = "zthompso@stevens.edu";
   /*You can un-comment the line above and add your email if you don't want to log in every time you 
   re-run your code. If this line is un-commented, the route will send you right to the homepage when
   you press login. Just make sure to put the comment back before you commit the code to Github. */
@@ -361,7 +361,7 @@ router
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
-        studentRegistered,
+        studentRegistered: studentRegistered,
         eligible: user.class === event.class,
         past: past,
         givenFeedback: givenFeedback,
@@ -655,7 +655,13 @@ router.route("/edit/:id")
     res.render(path.resolve("/static/landingpage.handlebars"));
     return;
   }
-  let theEvent = await eventData.getEventByID(req.params.id);
+  let theEvent;
+  try {
+    theEvent = await eventData.getEventByID(req.params.id);
+  }
+  catch(e) {
+    return res.status(400).json({error: e});
+  }
   if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
     return res.status(400).json({error: "You cannot edit a past event."});
   }
@@ -669,7 +675,13 @@ router.route("/edit/:id")
     res.render(path.resolve("/static/landingpage.handlebars"));
     return;
   }
-  let theEvent = await eventData.getEventByID(req.params.id.toString());
+  let theEvent;
+  try {
+    theEvent = await eventData.getEventByID(req.params.id);
+  }
+  catch(e) {
+    return res.status(400).json({error: e});
+  }
   if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
     return res.status(400).json({error: "You cannot edit a past event."});
   }
@@ -743,4 +755,44 @@ router.route("/edit/:id")
       return res.status(400).json({ error: e });
     }
   });
+router.route("/deleteevent/:id")
+.get(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
+  }
+  let theEvent = await eventData.getEventByID(req.params.id);
+  if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
+    return res.status(400).json({error: "You cannot delete a past event."});
+  }
+  if(theEvent.organizer !== activeUser) {
+    return res.status(400).json({error: "You did not create this event, so you cannot delete it."});
+  }
+  res.render(path.resolve("static/deleteevent.handlebars"), {eventid: theEvent._id.toString()});
+})
+.post(async (req, res) =>  {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
+  }
+  let theEvent;
+  try {
+    theEvent = await eventData.getEventByID(req.params.id);
+  }
+  catch(e) {
+    return res.status(400).json(e);
+  }
+  if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
+    return res.status(400).json({error: "You cannot delete a past event."});
+  }
+  if(theEvent.organizer !== activeUser) {
+    return res.status(400).json({error: "You did not create this event, so you cannot delete it."});
+  }
+  try {
+    await eventData.removeEvent(req.params.id);
+  }
+  catch(e) {
+    return res.status(400).json({error: e});
+  }
+});
 export default router;

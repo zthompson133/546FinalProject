@@ -1,0 +1,21 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ 
+ <head>
+     <meta charset="utf-8">
+     <title>Confirm Delete Event</title>
+	 <link rel='stylesheet' href='../public/css/main.css' />
+ </head>
+ <body>
+    <h1>Confirm Delete Event</h1>
+    Are you sure you want to delete this event?
+    <form action="/deleteevent/{{eventid}}" method="POST">
+      Yes
+      <button type = "submit">Confirm</button>
+    </form>
+    <form action="/createevent" method="GET">
+      No
+      <button type = "submit">Back to Created Events</button>
+    </form>
+ </body>
+ </html>

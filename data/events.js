@@ -6,6 +6,8 @@ import * as usersData from "./users.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import e from "express";
+import { get } from "http";
+import { threadId } from "worker_threads";
 dotenv.config();
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -401,4 +403,23 @@ export async function moveRegisteredToAttended(userId) {
 
   return updateUserInfo;
 }
+export async function removeEvent(eventId) {
+  let theEvent = await getEventByID(eventId);
+  let theAttendees = theEvent.attendees;
+  for(let a = 0; a < theAttendees.length; a++) {
+    let theUser = await usersData.getUserById(theAttendees[a]);
+    let eventList = theUser.registeredEvents;
+    const index = eventList.indexOf(eventId);
+    if (index !== -1) {
+      eventList.splice(index, 1);
+      await usersData.changeField(theUser.email, "registeredEvents", eventList);
+    }
+  }
+  const userCollection = await users();
+  const theInfo = await userCollection.findOneAndDelete({_id: new ObjectId(eventId)});
+  if(!theInfo) {
+    throw "Could not delete event.";
+  }
+  return true;
 
+}

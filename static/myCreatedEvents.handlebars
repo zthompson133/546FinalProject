@@ -36,7 +36,7 @@
           </form>
 
           <!-- Delete Form -->
-          <form action="/events/{{this._id}}" method="post" style="display:inline;">
+          <form action="/deleteevent/{{this._id}}" method="get" style="display:inline;">
             <input type="hidden" name="_method" value="DELETE">
             <button type="submit">Delete</button>
           </form>
