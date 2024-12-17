@@ -20,7 +20,7 @@ router.route("/signup").post(async (req, res) => {
   res.render(path.resolve("static/signup.handlebars"));
 });
 router.route("/login").post(async (req, res) => {
-  //activeUser = "zthompso@stevens.edu";
+  activeUser = "zthompso@stevens.edu";
   /*You can un-comment the line above and add your email if you don't want to log in every time you 
   re-run your code. If this line is un-commented, the route will send you right to the homepage when
   you press login. Just make sure to put the comment back before you commit the code to Github. */
@@ -28,18 +28,10 @@ router.route("/login").post(async (req, res) => {
     let theUser = await userData.getUserByEmail(activeUser);
     let theEvents = await eventData.getEventsByClass(theUser.class);
     let activeEvents = [];
-    const now = new Date();
     for (const event of theEvents) {
-      const [year, month, day] = event.date.split("-");
-      const eventDate = new Date(year, month - 1, day);
-      const eventStartTime = new Date(`${event.date}T${event.starttime}`);
-      if (eventDate > now) {
-        activeEvents.push(event);
-      } else if (eventDate.toDateString() === now.toDateString()) {
-        if (eventStartTime > now) {
-          activeEvents.push(event);
-        }
-      }
+     if(helpers.isUpcoming(event.date, event.starttime)) {
+      activeEvents.push(event);
+     }
     }
     activeEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
     res.render(path.resolve("static/homepage.handlebars"), {
@@ -424,53 +416,6 @@ router
       return res.status(404).json({ error: e });
     }
   })
-  .patch(async (req, res) => {
-    //update specific fields of an event (partially update)
-    if (!activeUser) {
-      res.render(path.resolve("static/landingpage.handlebars"));
-      return;
-    }
-    const requestBody = req.body;
-    //check to make sure there is something in req.body
-    if (!requestBody || Object.keys(requestBody).length === 0) {
-      return res
-        .status(400)
-        .json({ error: "There are no fields in the request body" });
-    }
-    //check the inputs that will return 400 if fail
-    try {
-      req.params.id = helpers.checkId(req.params.id, "Event ID");
-      if (requestBody.title)
-        requestBody.title = helpers.checkString(
-          requestBody.title,
-          "Event Title"
-        );
-      if (requestBody.date)
-        requestBody.date = helpers.checkString(requestBody.date, "Event Date");
-      if (requestBody.location)
-        requestBody.location = helpers.checkString(
-          requestBody.location,
-          "Location"
-        );
-      if (requestBody.organizerId)
-        requestBody.organizerId = helpers.checkId(
-          requestBody.organizerId,
-          "Organizer ID"
-        );
-    } catch (e) {
-      return res.status(400).json({ error: e });
-    }
-    //try to perform update
-    try {
-      const updatedEvent = await eventData.updateEventPatch(
-        req.params.id,
-        requestBody
-      );
-      return res.json(updatedEvent);
-    } catch (e) {
-      return res.status(404).json({ error: e });
-    }
-  })
   .delete(async (req, res) => {
     //delete an event by ID
     //check the id
@@ -703,6 +648,99 @@ router
     } catch (e) {
       return res.status(400).json({ error: e });
     }
-  })
-
+  });
+router.route("/edit/:id")
+.get(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
+  }
+  let theEvent = await eventData.getEventByID(req.params.id);
+  if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
+    return res.status(400).json({error: "You cannot edit a past event."});
+  }
+  if(theEvent.organizer !== activeUser) {
+    return res.status(400).json({error: "You did not create this event, so you cannot edit it."});
+  }
+  res.render(path.resolve("static/editevent.handlebars"), {eventid: theEvent._id.toString()});
+})
+.post(async (req, res) => {
+  if (!activeUser) {
+    res.render(path.resolve("/static/landingpage.handlebars"));
+    return;
+  }
+  let theEvent = await eventData.getEventByID(req.params.id.toString());
+  if(!helpers.isUpcoming(theEvent.date, theEvent.starttime)) {
+    return res.status(400).json({error: "You cannot edit a past event."});
+  }
+  if(theEvent.organizer !== activeUser) {
+    return res.status(400).json({error: "You did not create this event, so you cannot edit it."});
+  }
+  const theBody = req.body;
+  if(!theBody.name) {
+    theBody.name = theEvent.name;
+  }
+  if(!theBody.description) {
+    theBody.description = theEvent.description;
+  }
+  if(!theBody.date) {
+    theBody.date = theEvent.date;
+  }
+  if(!theBody.starttime) {
+    theBody.starttime = theEvent.starttime;
+  }
+  if(!theBody.endtime) {
+    theBody.endtime = theEvent.endtime;
+  }
+  if(!theBody.location) {
+    theBody.location = theEvent.location;
+  }
+  if(!theBody.poster) {
+    theBody.poster = theEvent.poster;
+  }
+    //check all inputs, that should respond with a 400
+    try {
+      let eventName = helpers.isValidString(theBody.name, "Event Title");
+      let description = helpers.isValidString(
+        theBody.description,
+        "Event Description"
+      );
+      helpers.checkValidDate(theBody.date, "Event Date");
+      let starttime = helpers.isValidTime(
+        theBody.starttime,
+        "Event Start Time"
+      );
+      let endtime = helpers.checkEndTime(
+        theBody.starttime,
+        theBody.endtime,
+        "Event Data Start Time"
+      );
+      let location = helpers.checkString(theBody.location, "Location");
+      let poster = "default";
+      if (theBody.Poster !== "") {
+        poster = theBody.Poster;
+      }
+      const newEvent = await eventData.editEvent(
+        req.params.id,
+        eventName,
+        description,
+        theBody.date,
+        starttime,
+        endtime,
+        location,
+        poster
+      );
+      let theUser = await userData.getUserByEmail(activeUser);
+      let events = [];
+      for (const event of theUser.createdEvents) {
+        events.push(await eventData.getEventByID(event));
+      }
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
+      res.render(path.resolve("static/myCreatedEvents.handlebars"), {
+        events: events,
+      });
+    } catch (e) {
+      return res.status(400).json({ error: e });
+    }
+  });
 export default router;

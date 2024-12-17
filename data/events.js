@@ -82,71 +82,47 @@ export async function addEvent(
   return event;
 }
 
-export async function updateEvent(eventId, updateObject) {
-  eventId = helpers.isValidString(eventId);
-  if (helpers.checkId(eventId)) {
-    throw "Invalid object ID";
+export async function editEvent(
+  eventId,
+  name,
+  description,
+  date,
+  starttime,
+  endtime,
+  location,
+  Poster,
+) {
+  name = helpers.isValidString(name, "name");
+  description = helpers.isValidString(description, "description");
+  helpers.checkValidDate(date, "Date");
+  helpers.isValidTime(starttime, "Start time");
+  helpers.checkEndTime(starttime, endtime, "End time");
+  location = helpers.isValidString(location, "location");
+  //should check If organizer mail  is valid
+  if (Poster == null) {
+    Poster = "default";
   }
-
-  let event = await getEventByID(eventId);
-
-  if (updateObject.name) {
-    updateObject.name = helpers.isValidString(updateObject.name);
-  }
-
-  if (updateObject.description) {
-    updateObject.description = helpers.isValidString(updateObject.description);
-  }
-
-  if (updateObject.date) {
-    helpers.checkValidDate(updateObject.date);
-  }
-
-  if (updateObject.starttime) {
-    helpers.isValidTime(updateObject.starttime);
-  }
-
-  if (updateObject.endtime) {
-    if (updateObject.starttime) {
-      helpers.checkEndTime(updateObject.starttime, updateObject.endtime);
-    } else {
-      helpers.checkEndTime(event.starttime, updateObject.endtime);
-    }
-  }
-
-  if (updateObject.location) {
-    updateObject.location = helpers.isValidString(updateObject.location);
-  }
-
-  let rating = 0;
-  if (updateObject.feedback) {
-    for (const feedback of updateObject.feedback) {
-      rating += feedback.rating;
-    }
-
-    updateObject.rating = rating / updateObject.feedback.length;
-  }
-
-  if (updateObject.attendees) {
-    updateObject.numberOfAttendees = updateObject.attendees.length;
-  }
-
+  let newEvent = {
+    name: name,
+    description: description,
+    date: date,
+    starttime: starttime,
+    endtime: endtime,
+    location: location,
+    Poster: Poster,
+  };
   const eventsCollection = await events();
-  const updateData = { $set: updateObject };
-
+  const updateData = { $set: newEvent };
   const updatedInfo = await eventsCollection.findOneAndUpdate(
-    { _id: eventId },
+    { _id: new ObjectId(eventId) },
     updateData,
     { returnDocument: "after" }
   );
-
-  if (!updatedInfo.value) {
+  if (!updatedInfo) {
     throw "Could not update event.";
   }
-
   return updatedInfo.value;
 }
-
 //Returns a list of all events from the DB.
 export async function getAllEvents() {
   helpers.checkArgs(arguments, 0);
