@@ -9,7 +9,7 @@ await db.dropDatabase();
 
 const userCollection = await users();
 
-const user1 = await user.addUser('Mark', 'Johnson', 'mjohnson@stevens.edu', 'Undergraduate', 'helloWorld/1', 'helloWorld/1');
+const user1 = await user.addUser('Mark', 'Johnson', 'mjohnson@stevens.edu', 'undergraduate', 'helloWorld/1', 'helloWorld/1');
 
 const userUpdate1 = await userCollection.updateOne(
     { _id: new ObjectId(user1._id.toString()) },
@@ -19,7 +19,7 @@ const userUpdate1 = await userCollection.updateOne(
 const mid = await user.getUserById(user1._id.toString());
 const midEmail = mid.email
 
-const user2 = await user.addUser('Sara', 'Miller', 'smiller@stevens.edu', 'Undergraduate', 'cs4All!!', 'cs4All!!');
+const user2 = await user.addUser('Sara', 'Miller', 'smiller@stevens.edu', 'undergraduate', 'cs4All!!', 'cs4All!!');
 
 const userUpdate2 = await userCollection.updateOne(
   { _id: new ObjectId(user2._id.toString()) },
@@ -28,7 +28,7 @@ const userUpdate2 = await userCollection.updateOne(
 
 const sid = await user.getUserById(user2._id.toString());
 
-const user3 = await user.addUser('Joseph', 'Walker', 'jwalker@stevens.edu', 'Undergraduate', 'eventOrg#2', 'eventOrg#2');
+const user3 = await user.addUser('Joseph', 'Walker', 'jwalker@stevens.edu', 'undergraduate', 'eventOrg#2', 'eventOrg#2');
 
 const userUpdate3 = await userCollection.updateOne(
   { _id: new ObjectId(user3._id.toString()) },
