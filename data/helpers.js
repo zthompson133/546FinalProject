@@ -173,3 +173,18 @@ export function isValidString(string, name) {
   }
   return string.trim();
 }
+export function isUpcoming(date, starttime) {
+  const now = new Date();
+  const [year, month, day] = date.split("-");
+  const eventDate = new Date(year, month - 1, day);
+  const eventStartTime = new Date(`${date}T${starttime}`);
+  if (eventDate > now) {
+    return true;
+  } 
+  else if (eventDate.toDateString() === now.toDateString()) {
+    if (eventStartTime > now) {
+      return true;
+    }
+  }
+  return false;
+}

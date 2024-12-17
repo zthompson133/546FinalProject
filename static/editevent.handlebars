@@ -1,0 +1,59 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Event</title>
+    <link rel="stylesheet" href="../public/css/main.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Edit Event</h1>
+      <!--<form action="/events" method="POST" enctype="multipart/form-data">-->
+      <form action="/edit/{{eventid}}" method="POST">
+        <!-- Event Name -->
+        <div class="form-group">
+          <label for="event-name">Event Name</label>
+          <input type="text" id="event-name" name="name" />
+        </div>
+
+        <!-- Event Description -->
+        <div class="form-group">
+          <label for="event-description">Event Description</label>
+          <input type="text" id="event-description" name="description" />
+        </div>
+
+        <!-- Event Date -->
+        <div class="form-group">
+          <label for="event-date">Event Date</label>
+          <input type="date" id="event-date" name="date" />
+        </div>
+
+        <!-- Event Start Time -->
+        <div class="form-group">
+          <label for="event-start-time">Event Time</label>
+          <input type="time" id="event-start-time" name="starttime" />
+        </div>
+
+        <!-- Event End Time -->
+        <div class="form-group">
+          <label for="event-end-time">Event End Time</label>
+          <input type="time" id="event-end-time" name="endtime" />
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+          <label for="event-location">Location</label>
+          <input type="text" id="event-location" name="location" />
+        </div>
+
+        <!-- Flyer Upload -->
+        <div class="form-group">
+          <label for="Poster">Flyer (optional)</label>
+          <input type="file" id="Poster" name="Poster" accept="image/*" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Edit Event</button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -12,6 +12,7 @@ const constructorMethod = (app) => {
   app.use("/myprofile", theRoute); //Sends user to their profile page. (Not done yet)
   app.use("/createevent", theRoute); //Sends user to the create event page
   app.use("/events", theRoute);
+  app.use("/edit", theRoute);
   app.use("*", (req, res) => {
     res.status(404).json({ error: "Not found" });
   });

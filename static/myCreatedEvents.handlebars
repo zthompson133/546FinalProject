@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Created Events</title>
-  <link rel="stylesheet" href="public/css/main.css">
+  <link rel="stylesheet" href="../public/css/main.css">
 </head>
 <body>
   <h1>My Created Events</h1>
@@ -30,13 +30,13 @@
         <td>
 
           <!-- Link to Edit -->
-          <form action="/edit/{{this._id}}" method="post" style="display:inline;">
+          <form action="/edit/{{this._id}}" method="get" style="display:inline;">
           <input type="hidden" name="_method">
           <button type="submit">Edit</button>
           </form>
 
           <!-- Delete Form -->
-          <form action="/events/{{this._id}}" method="post" style="display:inline;">
+          <form action="/deleteevent/{{this._id}}" method="get" style="display:inline;">
             <input type="hidden" name="_method" value="DELETE">
             <button type="submit">Delete</button>
           </form>
