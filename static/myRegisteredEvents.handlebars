@@ -4,8 +4,13 @@
     <link rel="stylesheet" href="public/css/main.css">
   </head>
   <body>
-    <h1>{{title}}</h1>
-
+  <nav> <form class = "ib_form" action="/login" method="POST">
+  <button type="submit" class="footer-btn">Back to Homepage</button> </form>
+  <form class = "ib_form" action="/myaccount" method="POST">
+  <button type="submit" class="footer-btn">My Account</button></form>
+  <form display = "inline" class = "ib_form" action="/logout" method="POST">
+  <button type = "submit">Log Out</button></form></nav>
+  <h1>{{title}}</h1>
     <ul>
       {{#each events}}
         <li>
@@ -19,12 +24,7 @@
     </ul>
 
     <footer class="footer-navigation">
-      <form class = "ib_form" action="/login" method="POST">
-        <button type="submit" class="footer-btn">Back to Homepage</button>
-      </form>
-      <form class = "ib_form" action="/myaccount" method="POST">
-        <button type="submit" class="footer-btn">My Account</button>
-      </form>
+
     </footer>
 
   </body>

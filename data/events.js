@@ -48,7 +48,7 @@ export async function addEvent(
   //should check If organizer mail  is valid
   Class = helpers.isValidClass(Class, "class");
   if (Poster == null) {
-    Poster = "default";
+    Poster = "../public/imgs/default.jpg";
   }
   feedback = [];
   rating = user.rating;

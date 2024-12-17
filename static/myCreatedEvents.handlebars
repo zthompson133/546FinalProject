@@ -7,8 +7,13 @@
   <link rel="stylesheet" href="../public/css/main.css">
 </head>
 <body>
-  <h1>My Created Events</h1>
-
+  <nav> <form class = "ib_form" action="/login" method="POST">
+  <button type="submit" class="footer-btn">Back to Homepage</button> </form>
+  <form class = "ib_form" action="/myaccount" method="POST">
+  <button type="submit" class="footer-btn">My Account</button></form>
+  <form display = "inline" class = "ib_form" action="/logout" method="POST">
+  <button type = "submit">Log Out</button></form></nav>
+  <h1>My Created Events</h1>      
   {{#if events.length}}
   <table>
     <thead>
@@ -49,13 +54,6 @@
   <p>You have not created any events yet.</p>
   {{/if}}
 
-  <footer class="footer-navigation">
-      <form action="/login" method="POST">
-        <button type="submit" class="footer-btn">Back to Homepage</button>
-      </form>
-      <form action="/myaccount" method="POST">
-        <button type="submit" class="footer-btn">My Account</button>
-      </form>
-    </footer>
+
 </body>
 </html>

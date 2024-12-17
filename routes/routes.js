@@ -748,7 +748,7 @@ router.route("/edit/:id")
         "Event Data Start Time"
       );
       let location = helpers.checkString(theBody.location, "Location");
-      let poster = "default";
+      let poster = "../public/imgs/default.jpg";
       if (theBody.Poster !== "") {
         poster = theBody.Poster;
       }
