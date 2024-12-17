@@ -139,7 +139,7 @@ export async function getEventByID(id) {
   const event = await eventCollection.findOne({ _id: new ObjectId(id) });
 
   if (event === null) {
-    throw "No team with that id";
+    throw "No event with that id";
   }
 
   event._id = event._id.toString();
@@ -368,15 +368,15 @@ export async function moveRegisteredToAttended(userId) {
   let user = await usersData.getUserById(userId);
 
   const past = await pastEvents(user);
-  const pastEventIds = []
+  const pastEventIds = [];
   for (const event of past) {
-    pastEventIds.push(event._id.toString())
+    pastEventIds.push(event._id.toString());
   }
 
   const updatedRegistered = [];
   const updatedAttended = [];
   for (const event of user.attendedEvents) {
-    updatedAttended.push(event)
+    updatedAttended.push(event);
   }
 
   for (const eventId of user.registeredEvents) {
@@ -396,8 +396,8 @@ export async function moveRegisteredToAttended(userId) {
     {
       $set: {
         registeredEvents: user.registeredEvents,
-        attendedEvents: user.attendedEvents
-      }
+        attendedEvents: user.attendedEvents,
+      },
     }
   );
 
@@ -423,3 +423,5 @@ export async function removeEvent(eventId) {
   return true;
 
 }
+
+

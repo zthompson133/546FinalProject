@@ -1,13 +1,24 @@
-import e, { Router } from "express";
+import { Router } from "express";
 import path from "path";
 import * as userData from "../data/users.js";
 import * as eventData from "../data/events.js";
-import * as feedbackData from "../data/feedback.js"
+import * as feedbackData from "../data/feedback.js";
 import * as helpers from "../data/helpers.js";
 import { runInNewContext } from "vm";
 import GetIntrinsic from "get-intrinsic";
+import multer from "multer";
 
-let activeUser = false;
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Multer setup for file uploads
+const upload = multer({
+  dest: "public/imgs/", // Destination folder for uploaded images
+});
+
+let activeUser = false; //"mdasari1@stevens.edu";
 /*
 See index.js for description of each route.
 
@@ -243,8 +254,10 @@ router
       return res.status(500).json({ error: e });
     }
   })
-  .post(async (req, res) => {
+  .post(upload.single("Poster"), async (req, res) => {
     //create a new event after validating inputs
+    const filename = req.file ? req.file.filename : null;
+
     const theBody = req.body;
     //make sure there is something present in the req.body
 
@@ -272,10 +285,11 @@ router
       );
       let location = helpers.checkString(theBody.location, "Location");
       let theClass = helpers.isValidClass(theBody.Class, "Class");
-      let poster = "default";
-      if (theBody.Poster !== "") {
-        poster = theBody.Poster;
+      let poster = "../public/imgs/default.jpg";
+      if (filename) {
+        poster = "../public/imgs/" + filename;
       }
+
       const newEvent = await eventData.addEvent(
         eventName,
         description,
@@ -324,15 +338,15 @@ router
         }
       });
       const event = await eventData.getEventByID(req.params.id);
-      let creator = false
+      let creator = false;
       if (activeUser === event.organizer) {
-        creator = true
+        creator = true;
       }
-      
-      let allFeedback = []
+
+      let allFeedback = [];
       if (creator) {
         for (const feedback of event.feedback) {
-          allFeedback.push(feedback)
+          allFeedback.push(feedback);
         }
       }
       let past = true;
@@ -347,17 +361,18 @@ router
           past = false;
         }
       }
-      let givenFeedback = false
-      let feedbacks
+      let givenFeedback = false;
+      let feedbacks;
       if (past) {
         for (const feedback of event.feedback) {
           const backReadable = JSON.parse(JSON.stringify(feedback, null));
           if (backReadable.userId.toString() === userId.toString()) {
-            givenFeedback = true
-            feedbacks = backReadable
+            givenFeedback = true;
+            feedbacks = backReadable;
           }
         }
       }
+      console.log(event.Poster);
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
@@ -367,7 +382,7 @@ router
         givenFeedback: givenFeedback,
         feedback: feedbacks,
         creator: creator,
-        allFeedback: allFeedback
+        allFeedback: allFeedback,
       });
     } catch (e) {
       console.log(e);
@@ -503,7 +518,7 @@ router.route("/myRegisteredEvents").get(async (req, res) => {
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
   try {
-    await eventData.moveRegisteredToAttended(userId.toString())
+    await eventData.moveRegisteredToAttended(userId.toString());
     const events = await userData.registeredEvents(userId.toString());
     if (!events) {
       throw new Error("No Events Found");
@@ -525,11 +540,11 @@ router.route("/pastEvents").get(async (req, res) => {
   let theUser = await userData.getUserByEmail(activeUser);
   let userId = theUser["_id"];
   try {
-    await eventData.moveRegisteredToAttended(userId.toString())
-    let attended = []
+    await eventData.moveRegisteredToAttended(userId.toString());
+    let attended = [];
     for (const event of theUser.attendedEvents) {
-      const eventFull = await eventData.getEventByID(event)
-      attended.push(eventFull)
+      const eventFull = await eventData.getEventByID(event);
+      attended.push(eventFull);
     }
     if (!theUser.attendedEvents) {
       throw new Error("No Events Found");
@@ -550,47 +565,51 @@ router
       res.render(path.resolve("static/landingpage.handlebars"));
       return;
     }
-  
+
     try {
       req.params.id = helpers.checkId(req.params.id, "Event ID URL Param");
     } catch (e) {
       return res.status(400).json({ error: e });
     }
-  
+
     try {
       let user = await userData.getUserByEmail(activeUser);
-      console.log(user)
+      console.log(user);
       let userId = user["_id"].toString();
       let studentRegistered = user.registeredEvents.includes(req.params.id);
-      
+
       const event = await eventData.getEventByID(req.params.id);
-      console.log(event)
-      
+      console.log(event);
+
       let past = true;
       const now = new Date();
       const [year, month, day] = event.date.split("-");
       const eventDate = new Date(year, month - 1, day);
       const eventStartTime = new Date(`${event.date}T${event.starttime}`);
-  
-      if (eventDate > now || (eventDate.toDateString() === now.toDateString() && eventStartTime > now)) {
+
+      if (
+        eventDate > now ||
+        (eventDate.toDateString() === now.toDateString() &&
+          eventStartTime > now)
+      ) {
         past = false;
       }
-  
+
       let givenFeedback = false;
       let userFeedback = null;
-  
+
       if (past) {
         for (const feedback of event.feedback) {
-          console.log('here2')
+          console.log("here2");
           if (feedback.userId.toString() === userId.toString()) {
-            console.log('here2')
+            console.log("here2");
             givenFeedback = true;
             userFeedback = feedback;
             break;
           }
         }
       }
-  
+
       return res.render(path.resolve("static/eventpage.handlebars"), {
         event: event,
         title: "Event Page",
@@ -598,7 +617,7 @@ router
         eligible: user.class === event.class,
         past: past,
         givenFeedback: givenFeedback,
-        userFeedback: userFeedback
+        userFeedback: userFeedback,
       });
     } catch (e) {
       console.log(e);
@@ -642,7 +661,12 @@ router
         throw "User not found or not logged in.";
       }
 
-      await feedbackData.createFeedback(user._id.toString(), eventId, parsedRating, validatedComment);
+      await feedbackData.createFeedback(
+        user._id.toString(),
+        eventId,
+        parsedRating,
+        validatedComment
+      );
 
       res.redirect(`/events/${eventId}`);
     } catch (e) {
