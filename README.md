@@ -3,7 +3,7 @@ Events should now be sorted chronologically. Event dates and times aren't displa
 readable. (Dates are "2024-02-16", etc and times are in 24-hour time). The routing and handlebars for event search and editing events are the main things not done yet. 
 
 Student:
-Sign up to the event planner, login, and then search for desired events.
+Sign up to the event planner using your stevens email, verify email, login with the same credentials, and then search for desired event.
 
 Verified User:
-Sign up, make your account field true on mongo, login, create an event with all necessary information.
+Sign up, make your account field true on mongo compass, login, create an event with all necessary information.
