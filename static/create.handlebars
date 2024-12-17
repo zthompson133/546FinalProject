@@ -4,46 +4,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Event</title>
     <link rel="stylesheet" href="../public/css/main.css" />
+    <script defer src="../public/js/main.js"></script>
   </head>
   <body>
     <div class="container">
-      <h1>Create a New Event</h1>
+      <h1 class="create-event-title">Create a New Event</h1>
       <!--<form action="/events" method="POST" enctype="multipart/form-data">-->
-      <form action="/events" method="POST" enctype="multipart/form-data">
+      <form
+        id="create-event-form"
+        name="create-event-form"
+        action="/events"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         <!-- Event Name -->
         <div class="form-group">
           <label for="event-name">Event Name</label>
           <input type="text" id="event-name" name="name" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event Name is required.</span>
         </div>
 
         <!-- Event Description -->
         <div class="form-group">
           <label for="event-description">Event Description</label>
           <input type="text" id="event-description" name="description" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event Description is required.</span>
         </div>
 
         <!-- Event Date -->
         <div class="form-group">
           <label for="event-date">Event Date</label>
           <input type="date" id="event-date" name="date" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event date is required.</span>
         </div>
 
         <!-- Event Start Time -->
         <div class="form-group">
           <label for="event-start-time">Event Time</label>
           <input type="time" id="event-start-time" name="starttime" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event start time is required.</span>
         </div>
 
         <!-- Event End Time -->
         <div class="form-group">
           <label for="event-end-time">Event End Time</label>
           <input type="time" id="event-end-time" name="endtime" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event end time is required.</span>
         </div>
 
         <!-- Location -->
         <div class="form-group">
           <label for="event-location">Location</label>
           <input type="text" id="event-location" name="location" />
+          <span
+            class="create-event-error"
+            style="display: none; color: red;"
+          >Event location is required.</span>
         </div>
 
         <!-- Host -->
@@ -67,22 +98,5 @@
       </form>
     </div>
 
-    <script>
-      /*// Set default values for optional fields if not provided
-      document.querySelector('form').addEventListener('submit', function(event)
-      { // Set default flyer image if not uploaded if
-      (!document.getElementById('Poster').files.length) {
-      document.getElementById('Poster').value = 'no-image'; } // Set
-      defaultregistration deadline to event end time if
-      (!document.getElementById('registration-deadline').value) {
-      document.getElementById('registration-deadline').value =
-      document.getElementById('event-date').value + 'T' +
-      document.getElementById('event-start-time').value; } // Set default
-      unregister deadline to event start time if
-      (!document.getElementById('unregister-deadline').value) {
-      document.getElementById('unregister-deadline').value =
-      document.getElementById('event-date').value + 'T' +
-      document.getElementById('event-start-time').value; } });*/
-    </script>
   </body>
 </html>
