@@ -11,33 +11,33 @@
    <div>This is the landing page for login/signup errors and account management. You may have come here on 
     purpose, or you were sent here by an error. If there was an error, it is displayed below.
    </div>
-   <div class = "errorcss">{{error}}</div></br>
+   <div class = "errorcss">{{error}}</div><br>
    Options:
-    <ol>
+    <ul>
     <li>
     <form action = "/sendveremail" method="POST">
-    Verify Account</br>
+    Verify Account<br>
     Send New Verification Email? <input type = "checkbox" id = "new_veremail" name = "new_veremail">
-    <label for = "new_veremail"></label></input></br>
+    <label for = "new_veremail"></label><br>
     Email <input type = "text" id = "errorveremail" name = "errorveremail">
-    <label for = "errorveremail"></label></input>
+    <label for = "errorveremail"></label>
     <button type = "submit">Go</button>
     </form>
     </li>
     <li>
     <form action = "/sendpasswdemail" method="POST">
-    Reset Password </br>
+    Reset Password <br>
     Send New Password Email? <input type = "checkbox" id = "new_pwdemail" name = "new_pwdemail">
-    <label for = "new_pwdemail"></label></input></br>
+    <label for = "new_pwdemail"></label><br>
     Email <input type = "text" id = "errorpwdemail" name = "errorpwdemail">
-    <label for = "errorpwdemail"></label></input>
-    <button type = "submit">Go</button>
-    </form>
-    </li>
+    <label for = "errorpwdemail"></label>
+    <button type = "submit">Go</button></form></li>
+    <li><form class = "ib_form" action="/login" method="POST">Back to Homepage
+    <button type="submit" class="footer-btn">Go</button> </form></li>
     <li>
-   <form action="/logout" method="POST">
+    <form action="/logout" method="POST">
     Logout <button type = "submit">Go</button>
   </form>
   </li>
-  </ol>
+  </ul>
 </body>

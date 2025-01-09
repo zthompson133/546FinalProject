@@ -21,7 +21,7 @@ Page the user sees after they log in.
     <form class = "ib_form" action = "/pastEvents" method = "GET">
     <button type = "submit">Attended Events</button></form>
 
-    <form display = "inline" class = "ib_form" action="/logout" method="POST">
+    <form class = "ib_form" action="/logout" method="POST">
     <button type = "submit">Log Out</button></form>
     
      
@@ -36,7 +36,7 @@ Page the user sees after they log in.
     <input id="keyword" type="text">
     <button class = "buttoninput" type="submit">Search Events</button></form>
     <form id = "showall" class = "ib_form" action = "/login" method = "POST" hidden>
-    <button type = "submit">Show All Events</button></form></br>
+    <button type = "submit">Show All Events</button></form><br>
     <h2>Upcoming Events</h2>
     
 
@@ -54,8 +54,8 @@ Page the user sees after they log in.
           <th>Location</th>
         </tr>
       </thead>
-    <tbody id = "resultrows">
-      {{#each events}}
+      <tbody id = "resultrows">
+        {{#each events}}
         <tr data-name = "{{this.name}}" data-description = "{{this.description}}">
           <td><a href = "/events/{{this._id}}">{{this.name}}</a></td>
           <td>{{this.date}}</td>
